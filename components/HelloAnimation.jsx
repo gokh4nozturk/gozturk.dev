@@ -19,7 +19,7 @@ export default function HelloAnimation() {
     <div className="flex items-start justify-center">
       <div
         className={cn(
-          "h-16 w-min overflow-hidden sm:h-20",
+          "h-20 w-min overflow-hidden",
           "grid place-items-center",
         )}
       >
