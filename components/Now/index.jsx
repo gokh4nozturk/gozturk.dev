@@ -84,10 +84,10 @@ export default async function Now() {
   if (rows.length === 0) return null;
 
   return (
-    <section className="mb-24 w-full sm:mb-28">
+    <section className="mb-24 w-full sm:mb-32">
       <h2 className="mb-2 flex items-center gap-2 font-medium text-sm">
         <span className="relative flex size-2">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-p3-primary opacity-75" />
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-p3-primary opacity-75 animate-pulsing animate-iteration-count-infinite" />
           <span className="relative inline-flex size-2 rounded-full bg-p3-primary" />
         </span>
         Now
