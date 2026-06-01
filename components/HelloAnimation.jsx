@@ -16,10 +16,10 @@ import { useState } from "react";
 export default function HelloAnimation() {
   const [onViewHello, setOnViewHello] = useState("english");
   return (
-    <div className="flex h-full items-start justify-center">
+    <div className="flex items-start justify-center">
       <div
         className={cn(
-          "-translate-x-1/2 -translate-y-2/3 fixed top-2/3 left-1/2 w-min overflow-hidden sm:h-32",
+          "w-min overflow-hidden sm:h-20",
           "grid place-items-center",
         )}
       >

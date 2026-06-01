@@ -4,7 +4,7 @@ import Now from "@components/Now";
 
 export default function Home() {
   return (
-    <div className="flex h-full flex-col justify-between sm:relative">
+    <div className="flex h-full flex-col justify-between">
       <About />
       <HelloAnimation />
       <Now />

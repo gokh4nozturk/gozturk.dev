@@ -12,7 +12,7 @@ function NowItem({ icon: Icon, label, title, href, date }) {
       <span className="shrink-0 opacity-60">{label}</span>
       <a
         className={cn(
-          "truncate text-p3-text decoration-p3-border underline-offset-4 hover:underline",
+          "truncate max-w-xs md:max-w-lg text-p3-text decoration-p3-border underline-offset-4 hover:underline",
           "dark:text-p3-text-dark",
         )}
         href={href}
