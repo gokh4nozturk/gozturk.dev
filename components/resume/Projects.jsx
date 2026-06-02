@@ -48,7 +48,7 @@ function ProjectItem({ project, isFirst }) {
 
 export function Projects() {
   return (
-    <section>
+    <section id="projects">
       <h2 className="mt-8 mb-4 flex items-center gap-2 border-gray-500 border-b pb-1 font-semibold text-gray-900 text-xl dark:border-gray-800 dark:text-white">
         <Folder size={20} />
         Open Source & Projects

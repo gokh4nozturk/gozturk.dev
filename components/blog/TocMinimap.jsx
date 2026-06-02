@@ -11,9 +11,10 @@ import { useEffect, useState } from "react";
  * - Tracks the active section via IntersectionObserver.
  * Visible on lg+ only.
  *
- * @param {{ items: Array<{ title: string, url: string, depth: number }>, className?: string }} props
+ * @param {{ items: Array<{ title: string, url: string, depth: number }>, className?: string, indent?: number }} props
+ * @param props.indent - pixels of visual indentation applied per heading-depth level (default 12)
  */
-export function TocMinimap({ items, className }) {
+export function TocMinimap({ items, className, indent = 12 }) {
   const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
@@ -41,6 +42,10 @@ export function TocMinimap({ items, className }) {
 
   if (!items?.length) return null;
 
+  // Indentation is relative to the shallowest heading present so a TOC made of
+  // only H3s isn't pushed in for no reason.
+  const minDepth = Math.min(...items.map((item) => item.depth));
+
   const handleClick = (event, url) => {
     event.preventDefault();
     const id = url.slice(1);
@@ -60,16 +65,17 @@ export function TocMinimap({ items, className }) {
       <ul className="flex flex-col items-end gap-2 py-2 group-hover:opacity-0">
         {items.map((item) => {
           const isActive = item.url.slice(1) === activeId;
+          const level = item.depth - minDepth;
           return (
             <li key={item.url}>
               <span
                 className={cn(
                   "block h-0.5 rounded-full transition-all",
-                  item.depth === 2 ? "w-6" : "ml-2 w-4",
                   isActive
                     ? "bg-p3-text dark:bg-p3-text-dark"
                     : "bg-p3-text/30 dark:bg-p3-text-dark/30",
                 )}
+                style={{ marginRight: level * indent, width: Math.max(8, 24 - level * 6) }}
               />
             </li>
           );
@@ -92,18 +98,19 @@ export function TocMinimap({ items, className }) {
         >
           {items.map((item) => {
             const isActive = item.url.slice(1) === activeId;
+            const level = item.depth - minDepth;
             return (
               <li key={item.url}>
                 <a
                   className={cn(
                     "block rounded px-2 py-1 text-sm transition-colors",
-                    item.depth === 3 && "pl-4",
                     isActive
                       ? "font-medium text-p3-text dark:text-p3-text-dark"
                       : "text-p3-text/60 hover:text-p3-text dark:text-p3-text-dark/60 dark:hover:text-p3-text-dark",
                   )}
                   href={item.url}
                   onClick={(event) => handleClick(event, item.url)}
+                  style={{ paddingLeft: 8 + level * indent }}
                 >
                   {item.title}
                 </a>

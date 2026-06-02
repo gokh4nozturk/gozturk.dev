@@ -34,7 +34,7 @@ function ContributionItem({ contribution, isFirst, isLast }) {
 
 export function OpenSourceContributions() {
   return (
-    <section>
+    <section id="open-source-contributions">
       <h3 className="mt-6 mb-0 flex items-center gap-2 border-gray-500 border-b font-medium text-gray-900 text-lg dark:border-gray-800 dark:text-white">
         <GitBranch size={18} />
         Open Source Contributions

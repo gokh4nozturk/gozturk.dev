@@ -3,7 +3,7 @@ import { GraduationCap } from "lucide-react";
 
 export function Education() {
   return (
-    <section>
+    <section id="education">
       <h2 className="mt-8 mb-4 flex items-center gap-2 border-gray-500 border-b pb-1 font-semibold text-gray-900 text-xl dark:border-gray-800 dark:text-white">
         <GraduationCap size={20} />
         Education
