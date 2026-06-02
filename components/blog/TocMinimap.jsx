@@ -21,23 +21,42 @@ export function TocMinimap({ items, className, indent = 12 }) {
     if (!items?.length) return;
 
     const ids = items.map((item) => item.url.slice(1));
-    const elements = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    if (!elements.length) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible.length > 0) {
-          setActiveId(visible[0].target.id);
+    const updateActive = () => {
+      // Active section = the last heading that has scrolled above a "reading
+      // line" ~30% down the viewport. Picking the last one (not the topmost
+      // visible) is what keeps the highlight on the section you're actually in,
+      // rather than on whatever heading happens to sit at the very top.
+      const line = window.innerHeight * 0.3;
+      let current = null;
+      for (const id of ids) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        if (el.getBoundingClientRect().top <= line) {
+          current = id;
+        } else {
+          break;
         }
-      },
-      { rootMargin: "0px 0px -70% 0px", threshold: 0 },
-    );
+      }
+      // Before the first heading reaches the line, keep the first one active.
+      setActiveId(current ?? ids.find((id) => document.getElementById(id)) ?? null);
+    };
 
-    for (const el of elements) observer.observe(el);
-    return () => observer.disconnect();
+    updateActive();
+
+    let frame = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(updateActive);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [items]);
 
   if (!items?.length) return null;
