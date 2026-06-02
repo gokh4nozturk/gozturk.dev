@@ -12,7 +12,7 @@ function NowItem({ icon: Icon, label, title, href, date }) {
       <span className="shrink-0 opacity-60">{label}</span>
       <a
         className={cn(
-          "truncate max-w-[280px] md:max-w-lg text-p3-text decoration-p3-border underline-offset-4 hover:underline",
+          "max-w-[240px] truncate text-p3-text decoration-p3-border underline-offset-4 hover:underline md:max-w-lg",
           "dark:text-p3-text-dark",
         )}
         href={href}
@@ -87,7 +87,7 @@ export default async function Now() {
     <section className="mb-24 w-full sm:mb-32">
       <h2 className="mb-2 flex items-center gap-2 font-medium text-sm">
         <span className="relative flex size-2">
-          <span className="absolute inline-flex size-full animate-ping rounded-full bg-p3-primary opacity-75 animate-pulsing animate-iteration-count-infinite" />
+          <span className="absolute inline-flex size-full animate-iteration-count-infinite animate-ping animate-pulsing rounded-full bg-p3-primary opacity-75" />
           <span className="relative inline-flex size-2 rounded-full bg-p3-primary" />
         </span>
         Now

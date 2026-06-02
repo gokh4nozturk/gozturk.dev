@@ -13,15 +13,16 @@ import { cn } from "@lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
+// Shrink the SVG height on mobile (and cap its width) so the wider scripts
+// (e.g. Turkish/Spanish/Vietnamese) never overflow narrow viewports.
+const helloEffectClass = "h-16 sm:h-20";
+
 export default function HelloAnimation() {
   const [onViewHello, setOnViewHello] = useState("english");
   return (
     <div className="flex items-start justify-center">
       <div
-        className={cn(
-          "h-20 w-min overflow-hidden",
-          "grid place-items-center",
-        )}
+        className={cn("max-w-full overflow-hidden", "grid place-items-center")}
       >
         <AnimatePresence mode="popLayout">
           <motion.div
@@ -33,6 +34,7 @@ export default function HelloAnimation() {
           >
             {onViewHello === "english" && (
               <AppleHelloEnglishEffect
+                className={helloEffectClass}
                 onAnimationComplete={() => {
                   setTimeout(() => setOnViewHello("turkish"), 800);
                 }}
@@ -40,6 +42,7 @@ export default function HelloAnimation() {
             )}
             {onViewHello === "turkish" && (
               <AppleHelloTurkishEffect
+                className={helloEffectClass}
                 onAnimationComplete={() => {
                   setTimeout(() => setOnViewHello("french"), 800);
                 }}
@@ -47,6 +50,7 @@ export default function HelloAnimation() {
             )}
             {onViewHello === "french" && (
               <AppleHelloFrenchEffect
+                className={helloEffectClass}
                 onAnimationComplete={() => {
                   setTimeout(() => setOnViewHello("spanish"), 800);
                 }}
@@ -54,6 +58,7 @@ export default function HelloAnimation() {
             )}
             {onViewHello === "spanish" && (
               <AppleHelloSpanishEffect
+                className={helloEffectClass}
                 onAnimationComplete={() => {
                   setTimeout(() => setOnViewHello("vietnamese"), 800);
                 }}
@@ -61,6 +66,7 @@ export default function HelloAnimation() {
             )}
             {onViewHello === "vietnamese" && (
               <AppleHelloVietnameseEffect
+                className={helloEffectClass}
                 onAnimationComplete={() => {
                   setTimeout(() => setOnViewHello("russian"), 800);
                 }}
@@ -68,6 +74,7 @@ export default function HelloAnimation() {
             )}
             {onViewHello === "russian" && (
               <AppleHelloRussianEffect
+                className={helloEffectClass}
                 onAnimationComplete={() => {
                   setTimeout(() => setOnViewHello("japanese"), 800);
                 }}
@@ -75,6 +82,7 @@ export default function HelloAnimation() {
             )}
             {onViewHello === "japanese" && (
               <AppleHelloJapaneseEffect
+                className={helloEffectClass}
                 onAnimationComplete={() => {
                   setTimeout(() => setOnViewHello("english"), 800);
                 }}
