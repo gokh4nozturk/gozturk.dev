@@ -1,8 +1,67 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tailwind-animations";
+
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: "Inter", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --color-p3-light: var(--p3-light);
+  --color-p3-dark: var(--p3-dark);
+
+  --color-p3-primary: var(--p3-primary);
+  --color-p3-primary-light: var(--p3-primary-light);
+  --color-p3-primary-dark: var(--p3-primary-dark);
+
+  --color-p3-secondary: var(--p3-secondary);
+  --color-p3-secondary-light: var(--p3-secondary-light);
+  --color-p3-secondary-dark: var(--p3-secondary-dark);
+
+  --color-p3-accent: var(--p3-accent);
+  --color-p3-accent-light: var(--p3-accent-light);
+  --color-p3-accent-dark: var(--p3-accent-dark);
+
+  --color-p3-text: var(--p3-text);
+  --color-p3-text-light: var(--p3-text-light);
+  --color-p3-text-dark: var(--p3-text-dark);
+
+  --color-p3-background: var(--p3-background);
+  --color-p3-background-light: var(--p3-background-light);
+  --color-p3-background-dark: var(--p3-background-dark);
+
+  --color-p3-border: var(--p3-border);
+  --color-p3-border-dark: var(--p3-border-dark);
+
+  --animate-marquee: marquee var(--duration) linear infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Tailwind v4 sets the default border color to currentColor; restore the v3
+   default (neutral-400) the project relied on via tailwind.config.js. */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-neutral-400);
+  }
+}
 
 :root {
   --expo-in: linear(

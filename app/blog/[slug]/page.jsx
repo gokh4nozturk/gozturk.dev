@@ -1,6 +1,6 @@
 import { getAllPosts, getPostData } from "lib/mdx";
-import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { notFound } from "next/navigation";
 import remarkGfm from "remark-gfm";
 import { useMDXComponents } from "../../../mdx-components";
 
@@ -12,7 +12,8 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }) {
-  const post = getPostData(params.slug);
+  const { slug } = await params;
+  const post = getPostData(slug);
 
   if (!post) {
     return {
@@ -33,11 +34,12 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function BlogPost({ params }) {
+export default async function BlogPost({ params }) {
+  const { slug } = await params;
   let post;
 
   try {
-    post = getPostData(params.slug);
+    post = getPostData(slug);
   } catch {
     notFound();
   }
@@ -49,7 +51,7 @@ export default function BlogPost({ params }) {
   const components = useMDXComponents({});
 
   return (
-    <article className="w-[680px] pb-40">
+    <article className="w-170 pb-40">
       {/* Post Header */}
       <header className="mb-8">
         <div className="mb-4 flex items-center gap-4 text-gray-500 text-sm dark:text-gray-400">
