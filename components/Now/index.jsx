@@ -87,7 +87,7 @@ export default async function Now() {
     <section className="mb-24 w-full sm:mb-32">
       <h2 className="mb-2 flex items-center gap-2 font-medium text-sm">
         <span className="relative flex size-2">
-          <span className="absolute inline-flex size-3 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-iteration-count-infinite animate-ping rounded-full bg-p3-primary opacity-75" />
+          <span className="absolute inline-flex size-2 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-p3-primary opacity-75" />
           <span className="relative inline-flex size-2 rounded-full bg-p3-primary" />
         </span>
         Now
