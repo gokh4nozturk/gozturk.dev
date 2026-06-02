@@ -8,17 +8,12 @@ export default function Blog() {
     <div className="flex w-full flex-col items-start">
       <div className="mb-8">
         <h1 className="mb-4 font-medium text-sm sm:text-base">Blog Posts</h1>
-        <p className="text-neutral-400 text-xs">
-          Technical articles and developer tips
-        </p>
+        <p className="text-neutral-400 text-xs">Technical articles and developer tips</p>
       </div>
 
       <div className="w-full space-y-6">
         {posts.map((post) => (
-          <article
-            className="border-gray-200 border-b pb-6 dark:border-gray-700"
-            key={post.id}
-          >
+          <article className="border-gray-200 border-b pb-6 dark:border-gray-700" key={post.id}>
             <div className="flex flex-col gap-2">
               <div className="flex gap-3 font-medium text-neutral-400 text-xs">
                 <time dateTime={post.date}>
@@ -39,17 +34,12 @@ export default function Blog() {
                 )}
               </div>
 
-              <AnimatedLink
-                className="font-medium text-sm sm:text-base"
-                href={`/blog/${post.id}`}
-              >
+              <AnimatedLink className="font-medium text-sm sm:text-base" href={`/blog/${post.id}`}>
                 {post.title}
               </AnimatedLink>
 
               {post.description && (
-                <p className="my-1 truncate text-neutral-400 text-xs">
-                  {post.description}
-                </p>
+                <p className="my-1 truncate text-neutral-400 text-xs">{post.description}</p>
               )}
 
               <div className="flex items-center justify-between">
@@ -83,14 +73,11 @@ export default function Blog() {
             </AnimatedLink>
 
             <p className="my-1 truncate text-neutral-400 text-xs">
-              Learn how to build a flexible and reusable breadcrumb navigation
-              component in Vue.js
+              Learn how to build a flexible and reusable breadcrumb navigation component in Vue.js
             </p>
 
             <div className="flex items-center justify-between">
-              <span className="font-medium text-neutral-400 text-xs">
-                By Gökhan Öztürk
-              </span>
+              <span className="font-medium text-neutral-400 text-xs">By Gökhan Öztürk</span>
               <AnimatedLink
                 className="font-medium text-neutral-400 text-xs hover:underline"
                 href="https://medium.com/@gokhaanozturk/vue-js-ile-özelleştirilebilir-breadcrumb-bileşeni-oluşturma-92a8e94a199e"
