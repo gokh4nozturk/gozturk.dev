@@ -59,7 +59,7 @@ function Bookmark({ data: bookmark }) {
       </div>
       <img
         alt={bookmark.title}
-        className="order-1 hidden aspect-[960/576] w-32 shrink-0 rounded-sm object-cover text-xs sm:block"
+        className="order-1 hidden aspect-960/576 w-32 shrink-0 rounded-sm object-cover text-xs sm:block"
         src={bookmark.cover}
       />
     </div>
