@@ -1,6 +1,6 @@
 {
-  "name": "gokhanozturk-io",
-  "version": "0.2.0",
+  "name": "gozturk-dev",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
