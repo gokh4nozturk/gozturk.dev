@@ -1,5 +1,4 @@
 import AnimatedLink from "@components/AnimatedLink";
-import { Calcom } from "@components/icons";
 
 export default function About() {
   return (
@@ -27,7 +26,7 @@ export default function About() {
         I am an enthusiast for well-designed products, free & open source software contributor &
         maintainer, and automator of anything that I can.
       </p>
-      <br />
+      {/* <br />
       <br />
       <AnimatedLink href="https://cal.com/gokhanozturk/15min" name="Cal.com">
         <span className="inline-flex items-center gap-2">
@@ -35,7 +34,7 @@ export default function About() {
           meet me at:
           <Calcom className="w-20 pb-1" />
         </span>
-      </AnimatedLink>
+      </AnimatedLink> */}
     </div>
   );
 }
