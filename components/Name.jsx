@@ -11,7 +11,7 @@ export function NameTransition() {
       <span aria-hidden="true" className="group relative block overflow-hidden">
         <span
           className={cn(
-            "group-hover:-translate-y-full inline-block transition-all duration-300 ease-in-out",
+            "inline-block transition-all duration-300 ease-in-out group-hover:-translate-y-full",
             isResume && "-translate-y-full",
           )}
         >

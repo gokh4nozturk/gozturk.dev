@@ -100,7 +100,7 @@ const LogoRolodex = ({ items }) => {
       </AnimatePresence>
 
       <hr
-        className="-translate-y-1/2 absolute top-1/2 right-0 left-0 z-[999999999] border-p3-border border-t-2"
+        className="absolute top-1/2 right-0 left-0 z-[999999999] -translate-y-1/2 border-p3-border border-t-2"
         style={{
           transform: "translateZ(1px)",
         }}
