@@ -10,7 +10,7 @@ export default function ThankYou({ className }) {
         "-mr-2.5 ml-1 flex items-center",
         "rounded-full no-underline transition",
         "bg-p3-accent text-p3-text transition-all",
-        "dark:bg-p3-accent/40 dark:text-p3-text-light",
+        "dark:bg-p3-accent/40 dark:text-p3-text-dark",
         className,
         "hover:animate-tada",
       )}
