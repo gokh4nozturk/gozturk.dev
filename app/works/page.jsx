@@ -53,11 +53,11 @@ export default async function Works() {
         description="A collection of works that I have contributed to."
         title="Works"
       />
-      <BrandScroller className="absolute inset-0 top-[72px] z-30 md:top-20" />
+      <BrandScroller className="absolute inset-0 top-18 z-30 md:top-20" />
       <ScrollArea className="mb-24 max-h-[calc(100dvh-15rem)]">
         <div className="grid divide-y py-10">
-          {works.map((work) => (
-            <Work data={work} key={work.id} />
+          {works.map((work, index) => (
+            <Work data={work} key={REPOS[index]} />
           ))}
         </div>
       </ScrollArea>
@@ -67,7 +67,7 @@ export default async function Works() {
 
 function Work({ data: work }) {
   return (
-    <div className="grid gap-1 py-3" key={work.id}>
+    <div className="grid gap-1 py-3">
       <AnimatedLink
         className="font-medium text-sm sm:text-base"
         href={work.html_url}
