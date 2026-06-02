@@ -75,7 +75,7 @@ export function TocMinimap({ items, className, indent = 12 }) {
                     ? "bg-p3-text dark:bg-p3-text-dark"
                     : "bg-p3-text/30 dark:bg-p3-text-dark/30",
                 )}
-                style={{ marginRight: level * indent, width: Math.max(8, 24 - level * 6) }}
+                style={{ width: Math.max(8, 24 - level * 8) }}
               />
             </li>
           );

@@ -1,5 +1,6 @@
 import AnimatedLink from "@components/AnimatedLink";
 import { projects } from "@lib/resume-data";
+import { slugId } from "@lib/utils";
 import { Folder } from "lucide-react";
 
 function ProjectItem({ project, isFirst }) {
@@ -9,7 +10,7 @@ function ProjectItem({ project, isFirst }) {
 
   return (
     <div>
-      <h3 className={titleClass}>
+      <h3 className={titleClass} id={slugId(project.title)}>
         {project.title} | {project.role}
       </h3>
       <a
