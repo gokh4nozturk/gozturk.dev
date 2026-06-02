@@ -21,12 +21,7 @@ function strokeTransition(index, speed) {
   };
 }
 
-
-function HelloStrokes({
-  strokes,
-  speed,
-  onAnimationComplete,
-}) {
+function HelloStrokes({ strokes, speed, onAnimationComplete }) {
   return (
     <>
       {strokes.map((stroke, index) => {
@@ -106,12 +101,7 @@ export function AppleHelloVietnameseEffect({
   );
 }
 
-export function AppleHelloEnglishEffect({
-  className,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloEnglishEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   const calc = (x) => x * speed;
 
   return (
@@ -173,12 +163,7 @@ const TURKISH_STROKES = [
   "M993.697 99.1614C992.673 105.664 991.648 112.166 990.623 118.669C986.142 147.109 984.074 158.329 984.296 165.663C984.815 182.784 990.972 194.447 1006.36 194.447C1025.71 194.447 1036.57 181.295 1041.78 166.903",
 ];
 
-export function AppleHelloTurkishEffect({
-  className,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloTurkishEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -213,12 +198,7 @@ const FRENCH_STROKES = [
   "M843.067 104.362C873.837 105.851 887.459 112.065 887.459 126.705C887.459 136.878 882.497 152.511 881.008 163.926C878.278 183.777 885.601 194.695 901.355 194.695C920.512 194.695 933.769 181.968 938.941 169.037",
 ];
 
-export function AppleHelloFrenchEffect({
-  className,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloFrenchEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -249,12 +229,7 @@ const SPANISH_STROKES = [
   "M505.875 96.0965C504.851 102.599 503.826 109.101 502.802 115.604C498.32 144.044 496.253 155.264 496.475 162.598C496.993 179.719 503.15 191.382 518.535 191.382C537.89 191.382 548.745 178.23 553.956 163.838",
 ];
 
-export function AppleHelloSpanishEffect({
-  className,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloSpanishEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -291,12 +266,7 @@ const RUSSIAN_STROKES = [
   "M796.829 166.999C803.792 123.793 820.506 97.1763 844.804 97.1763C861.479 97.1763 869.816 111.072 867.911 127.946C866.72 139.856 862.67 154 861.955 165.663C860.764 182.784 869.234 194.447 883.156 194.447C900.672 194.447 911.432 182.05 916.344 168.483",
 ];
 
-export function AppleHelloRussianEffect({
-  className,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloRussianEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -334,12 +304,7 @@ const JAPANESE_STROKES = [
   "M821.742 15.7711C824.666 41.779 825.669 73.7762 824.709 109.577C823.413 157.862 805.904 179.993 780.67 180.47C764.063 180.784 755.316 171.11 755.48 159.378C755.663 146.303 766.998 136.203 787.725 136.157C811.678 136.104 832.846 148.877 862.631 176.867",
 ];
 
-export function AppleHelloJapaneseEffect({
-  className,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloJapaneseEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}

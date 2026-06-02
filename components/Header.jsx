@@ -18,7 +18,7 @@ export function Header() {
         <div className="rounded-full">
           {mounted ? (
             <div className="relative grid size-16 place-items-center rounded-full border md:size-20">
-              <Profile className="-top-1.5 absolute size-full" />
+              <Profile className="absolute -top-1.5 size-full" />
             </div>
           ) : (
             <div className="size-16 place-items-center rounded-full border md:size-20">

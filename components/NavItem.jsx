@@ -1,5 +1,5 @@
 "use client";
-import cn from "classnames";
+import { cn } from "@lib/utils";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 
