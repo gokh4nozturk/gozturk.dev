@@ -1,5 +1,6 @@
 import AnimatedLink from "@components/AnimatedLink";
 import { experience } from "@lib/resume-data";
+import { slugId } from "@lib/utils";
 import { Briefcase } from "lucide-react";
 
 function ExperienceItem({ item, isFirst }) {
@@ -9,7 +10,7 @@ function ExperienceItem({ item, isFirst }) {
 
   return (
     <div>
-      <h3 className={titleClass}>
+      <h3 className={titleClass} id={slugId(item.company)}>
         {item.title} | {item.company}
       </h3>
       <p className="mb-2 text-gray-600 text-sm dark:text-gray-400">
