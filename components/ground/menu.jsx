@@ -1,8 +1,8 @@
 "use client";
 
-import { Bluesky } from "@components/icons";
+import { LinkedIn } from "@components/icons";
+import { SiBluesky, SiGithub, SiInstagram, SiX } from "@icons-pack/react-simple-icons";
 import { cn } from "@lib/utils";
-import { Github, Instagram, Linkedin, Twitter } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
@@ -71,31 +71,31 @@ export function CircularMenu({ className }) {
 
   const menuItems = [
     {
-      icon: <Github size={20} />,
+      icon: <SiGithub color="currentColor" size={20} />,
       name: "Github",
       rotation: 0,
       url: "https://github.com/gokh4nozturk?ref=gozturk.dev",
     },
     {
-      icon: <Linkedin size={20} />,
+      icon: <LinkedIn className="size-5" />,
       name: "Linkedin",
       rotation: 60,
       url: "https://www.linkedin.com/in/gokhannozturk?ref=gozturk.dev",
     },
     {
-      icon: <Twitter size={20} />,
+      icon: <SiX color="currentColor" size={20} />,
       name: "X",
       rotation: 120,
       url: "https://x.com/intent/follow?screen_name=gokh4nozturk?ref=gozturk.dev",
     },
     {
-      icon: <Instagram size={20} />,
+      icon: <SiInstagram color="currentColor" size={20} />,
       name: "Instagram",
       rotation: 180,
       url: "https://www.instagram.com/gokh4nozturk?ref=gozturk.dev",
     },
     {
-      icon: <Bluesky className="size-5" />,
+      icon: <SiBluesky className="size-5" />,
       name: "Bluesky",
       rotation: 240,
       url: "https://bsky.app/profile/gozturk.dev?ref=gozturk.dev",
@@ -133,7 +133,7 @@ export function CircularMenu({ className }) {
                 },
                 y: isOpen ? changeY : 0,
               }}
-              className="!h-[3px] w-4 shrink-0 bg-white sm:w-5 dark:bg-black"
+              className="h-0.75! w-4 shrink-0 bg-white sm:w-5 dark:bg-black"
               key={index}
             />
           );

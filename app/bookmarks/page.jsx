@@ -9,7 +9,7 @@ export const revalidate = 3600; // 60 * 60 seconds
 
 export default async function Bookmarks({ searchParams }) {
   const raindrop = new Raindrop();
-  const year = searchParams.year || "all";
+  const year = (await searchParams).year || "all";
   const bookmarks = await raindrop.getBookmark({
     page: 0,
     perPage: 100,

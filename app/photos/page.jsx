@@ -8,8 +8,6 @@ import NextImage from "next/image";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
 
-export const revalidate = 3600; // 60 * 60 seconds
-
 export default function Photos() {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
