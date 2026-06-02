@@ -21,9 +21,7 @@ export default function HelloAnimation() {
   const [onViewHello, setOnViewHello] = useState("english");
   return (
     <div className="flex items-start justify-center">
-      <div
-        className={cn("max-w-full overflow-hidden", "grid place-items-center")}
-      >
+      <div className={cn("max-w-full overflow-hidden", "grid place-items-center")}>
         <AnimatePresence mode="popLayout">
           <motion.div
             animate={{ opacity: 1 }}
