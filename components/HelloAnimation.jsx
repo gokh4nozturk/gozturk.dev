@@ -24,17 +24,17 @@ export default function HelloAnimation() {
   const [onViewHello, setOnViewHello] = useState("english");
   return (
     <div className="flex items-start justify-center">
-      {/* Fixed-size, stable box: width never changes between languages, so the
-          centered glyph never shifts horizontally. max-w caps it on desktop to
-          fit the widest script (Turkish ~414px); w-full keeps it responsive and
-          overflow-free on narrow viewports. */}
-      <div
-        className={cn("h-16 w-full max-w-104 overflow-hidden sm:h-20", "grid place-items-center")}
-      >
+      {/* Fixed-size, stable box: both width and height stay constant across every
+          language, so the glyph never shifts (no CLS). Each SVG fills this exact
+          box and its own preserveAspectRatio ("xMidYMid meet") scales + centers
+          the glyph inside — so wider scripts (Turkish) and taller scripts
+          (French/Spanish) all fit without clipping. max-w caps it on desktop;
+          w-full keeps it responsive and overflow-free on narrow viewports. */}
+      <div className={cn("relative h-16 w-full max-w-104 overflow-hidden sm:h-20")}>
         <AnimatePresence mode="popLayout">
           <motion.div
             animate={{ opacity: 1 }}
-            className="h-full w-full"
+            className="absolute inset-0"
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
             key="english"
