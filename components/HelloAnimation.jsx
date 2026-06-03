@@ -13,18 +13,28 @@ import { cn } from "@lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
-// Shrink the SVG height on mobile (and cap its width) so the wider scripts
-// (e.g. Turkish/Spanish/Vietnamese) never overflow narrow viewports.
-const helloEffectClass = "h-16 sm:h-20";
+// Fill a fixed-size box and let each SVG's intrinsic preserveAspectRatio
+// center the glyph inside it. Keeping the box constant across every language
+// is what prevents layout shift (CLS): the scripts have very different widths
+// (Spanish ~225px vs Turkish ~414px at this height), so sizing by height alone
+// would make the centered element jump horizontally on every swap.
+const helloEffectClass = "h-full w-full";
 
 export default function HelloAnimation() {
   const [onViewHello, setOnViewHello] = useState("english");
   return (
     <div className="flex items-start justify-center">
-      <div className={cn("max-w-full overflow-hidden", "grid place-items-center")}>
+      {/* Fixed-size, stable box: width never changes between languages, so the
+          centered glyph never shifts horizontally. max-w caps it on desktop to
+          fit the widest script (Turkish ~414px); w-full keeps it responsive and
+          overflow-free on narrow viewports. */}
+      <div
+        className={cn("h-16 w-full max-w-104 overflow-hidden sm:h-20", "grid place-items-center")}
+      >
         <AnimatePresence mode="popLayout">
           <motion.div
             animate={{ opacity: 1 }}
+            className="h-full w-full"
             exit={{ opacity: 0 }}
             initial={{ opacity: 0 }}
             key="english"
