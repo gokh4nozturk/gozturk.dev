@@ -17,9 +17,13 @@ const STATUS = {
   warning: { className: "text-amber-500 dark:text-amber-400", icon: CircleDot },
 };
 
+const INDENT = 22; // px each nesting level shifts right
+const MARKER = 18; // px marker size
+const center = (level) => level * INDENT + MARKER / 2;
+
 function EventMarker({ status }) {
   const { icon: Icon, className } = STATUS[status] ?? STATUS.info;
-  return <Icon className={cn("size-[18px] shrink-0", className)} strokeWidth={2} />;
+  return <Icon className={cn("size-[18px]", className)} strokeWidth={2} />;
 }
 
 function GroupToggle({ open, onClick }) {
@@ -27,7 +31,7 @@ function GroupToggle({ open, onClick }) {
     <button
       aria-expanded={open}
       aria-label={open ? "Collapse group" : "Expand group"}
-      className="flex size-[18px] shrink-0 items-center justify-center rounded-full border border-p3-border text-neutral-500 transition-colors hover:text-p3-text dark:border-p3-border-dark dark:hover:text-p3-text-dark"
+      className="flex size-[18px] items-center justify-center rounded-full border border-p3-border bg-p3-background-light text-neutral-500 transition-colors hover:text-p3-text dark:border-p3-border-dark dark:bg-p3-background-dark dark:hover:text-p3-text-dark"
       onClick={onClick}
       type="button"
     >
@@ -36,60 +40,76 @@ function GroupToggle({ open, onClick }) {
   );
 }
 
-function TimelineItem({ item, isLast }) {
-  const isGroup = Array.isArray(item.children) && item.children.length > 0;
-  const [open, setOpen] = useState(item.defaultOpen ?? false);
-  const toggle = () => setOpen((v) => !v);
+/**
+ * A single connector running from this row's marker to the next visible row's
+ * marker. Straight when the level is unchanged; a rounded elbow when entering
+ * (step right) or leaving (step left) a nesting level — together these form one
+ * continuous line that weaves into and out of nested groups.
+ */
+function Connector({ level, nextLevel }) {
+  const c = center(level);
+  const n = center(nextLevel);
+  const base = "absolute z-0 border-p3-border dark:border-p3-border-dark";
+
+  if (nextLevel === level) {
+    return (
+      <span
+        aria-hidden
+        className={cn(base, "border-l")}
+        style={{ bottom: 0, left: c, top: MARKER }}
+      />
+    );
+  }
+  if (nextLevel > level) {
+    return (
+      <span
+        aria-hidden
+        className={cn(base, "rounded-bl-[10px] border-b border-l")}
+        style={{ bottom: 0, left: c, top: MARKER, width: n - c }}
+      />
+    );
+  }
+  return (
+    <span
+      aria-hidden
+      className={cn(base, "rounded-br-[10px] border-r border-b")}
+      style={{ bottom: 0, left: n, top: MARKER, width: c - n }}
+    />
+  );
+}
+
+function Row({ row, nextLevel }) {
+  const { item, level, isGroup, open, onToggle } = row;
 
   return (
-    <li className="flex gap-3">
-      {/* gutter: marker on top, connector line growing toward the next item */}
-      <div className="flex flex-col items-center">
+    <div className="relative flex items-start gap-2" style={{ paddingLeft: level * INDENT }}>
+      {nextLevel != null && <Connector level={level} nextLevel={nextLevel} />}
+
+      <div className="relative z-10 shrink-0">
         {isGroup ? (
-          <GroupToggle onClick={toggle} open={open} />
+          <GroupToggle onClick={onToggle} open={open} />
         ) : (
           <EventMarker status={item.status} />
         )}
-        {!isLast && (
-          <span aria-hidden className="mt-1.5 w-px grow bg-p3-border dark:bg-p3-border-dark" />
-        )}
       </div>
 
-      {/* content */}
-      <div className={cn("min-w-0 flex-1", !isLast && "pb-4")}>
+      <div className="min-w-0 flex-1 pb-4">
         {isGroup ? (
-          <>
-            <button className="flex items-center gap-1.5 text-left" onClick={toggle} type="button">
-              {item.title && (
-                <span className="font-medium text-p3-text text-sm dark:text-p3-text-dark">
-                  {item.title}
-                </span>
-              )}
-              <span className="text-neutral-400 text-xs">
-                {item.title
-                  ? `${item.children.length} events`
-                  : `${item.children.length} more events`}
+          <button className="flex items-center gap-1.5 text-left" onClick={onToggle} type="button">
+            {item.title && (
+              <span className="font-medium text-p3-text text-sm dark:text-p3-text-dark">
+                {item.title}
               </span>
-              <ChevronRight
-                className={cn(
-                  "size-3.5 text-neutral-400 transition-transform",
-                  open && "rotate-90",
-                )}
-              />
-            </button>
-
-            {open && (
-              <ul className="mt-4 space-y-0">
-                {item.children.map((child, i) => (
-                  <TimelineItem
-                    isLast={i === item.children.length - 1}
-                    item={child}
-                    key={child.id ?? i}
-                  />
-                ))}
-              </ul>
             )}
-          </>
+            <span className="text-neutral-400 text-xs">
+              {item.title
+                ? `${item.children.length} events`
+                : `${item.children.length} more events`}
+            </span>
+            <ChevronRight
+              className={cn("size-3.5 text-neutral-400 transition-transform", open && "rotate-90")}
+            />
+          </button>
         ) : (
           <div className="space-y-0.5">
             <div className="flex flex-wrap items-center gap-x-2">
@@ -104,12 +124,37 @@ function TimelineItem({ item, isLast }) {
           </div>
         )}
       </div>
-    </li>
+    </div>
   );
 }
 
+/** Collect keys of groups that should start open. */
+function collectOpen(items, parentKey, acc) {
+  items.forEach((item, i) => {
+    const key = item.id ?? `${parentKey}/${i}`;
+    if (Array.isArray(item.children) && item.children.length > 0) {
+      if (item.defaultOpen) acc.add(key);
+      collectOpen(item.children, key, acc);
+    }
+  });
+  return acc;
+}
+
+/** Flatten the visible tree (respecting open state) into ordered rows. */
+function flatten(items, openIds, level, parentKey, acc) {
+  items.forEach((item, i) => {
+    const key = item.id ?? `${parentKey}/${i}`;
+    const isGroup = Array.isArray(item.children) && item.children.length > 0;
+    const open = isGroup && openIds.has(key);
+    acc.push({ isGroup, item, key, level, open });
+    if (open) flatten(item.children, openIds, level + 1, key, acc);
+  });
+  return acc;
+}
+
 /**
- * Timeline — renders a (optionally nested) timeline of events.
+ * Timeline — renders a (optionally nested) timeline of events as one continuous
+ * line that weaves into and out of collapsible groups.
  *
  * @param {Object[]} items - event nodes
  * @param {string}   items[].title       - event label (omit on a group to render "N more events")
@@ -120,11 +165,26 @@ function TimelineItem({ item, isLast }) {
  * @param {boolean} [items[].defaultOpen]
  */
 export function Timeline({ items = [], className }) {
+  const [openIds, setOpenIds] = useState(() => collectOpen(items, "", new Set()));
+
+  const toggle = (key) =>
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+
+  const rows = flatten(items, openIds, 0, "", []);
+
   return (
-    <ul className={cn("flex flex-col", className)}>
-      {items.map((item, i) => (
-        <TimelineItem isLast={i === items.length - 1} item={item} key={item.id ?? i} />
+    <div className={cn("flex flex-col", className)}>
+      {rows.map((row, i) => (
+        <Row
+          key={row.key}
+          nextLevel={i < rows.length - 1 ? rows[i + 1].level : null}
+          row={{ ...row, onToggle: () => toggle(row.key) }}
+        />
       ))}
-    </ul>
+    </div>
   );
 }
