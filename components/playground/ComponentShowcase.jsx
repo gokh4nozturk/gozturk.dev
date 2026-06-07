@@ -20,7 +20,7 @@ function CopyButton({ value }) {
   return (
     <button
       aria-label="Copy import"
-      className="shrink-0 text-neutral-400 transition-colors hover:text-p3-text"
+      className="shrink-0 text-neutral-400 transition-colors hover:text-p3-text dark:hover:text-p3-text-dark"
       onClick={copy}
       type="button"
     >
@@ -36,16 +36,16 @@ function CopyButton({ value }) {
 export function ComponentShowcase({ title, description, code, children, className }) {
   return (
     <section className={cn("w-full", className)}>
-      <h2 className="font-semibold text-lg text-p3-text">{title}</h2>
+      <h2 className="font-semibold text-lg text-p3-text dark:text-p3-text-dark">{title}</h2>
       {description && <p className="mt-1 text-neutral-400 text-sm">{description}</p>}
 
       {code && (
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-p3-border bg-p3-background px-3 py-2.5">
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-p3-border bg-p3-background-light px-3 py-2.5 dark:border-p3-border-dark dark:bg-p3-background-dark">
           <code className="overflow-x-auto whitespace-nowrap font-mono text-xs">
             <span className="text-purple-500 dark:text-purple-400">import </span>
-            <span className="text-p3-text">{"{ "}</span>
+            <span className="text-p3-text dark:text-p3-text-dark">{"{ "}</span>
             <span className="text-sky-600 dark:text-sky-400">{title}</span>
-            <span className="text-p3-text">{" } "}</span>
+            <span className="text-p3-text dark:text-p3-text-dark">{" } "}</span>
             <span className="text-purple-500 dark:text-purple-400">from </span>
             <span className="text-amber-600 dark:text-amber-400">{code}</span>
           </code>
@@ -53,7 +53,9 @@ export function ComponentShowcase({ title, description, code, children, classNam
         </div>
       )}
 
-      <div className="mt-4 rounded-xl border border-p3-border bg-p3-background p-5">{children}</div>
+      <div className="mt-4 rounded-xl border border-p3-border bg-p3-background-light p-5 dark:border-p3-border-dark dark:bg-p3-background-dark">
+        {children}
+      </div>
     </section>
   );
 }
