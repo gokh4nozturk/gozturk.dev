@@ -2,6 +2,7 @@
 
 import { cn } from "@lib/utils";
 import { ChevronRight, CircleCheck, CircleDot, CircleX, Clock, Plus } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 
 /**
@@ -19,7 +20,11 @@ const STATUS = {
 
 const INDENT = 22; // px each nesting level shifts right
 const MARKER = 18; // px marker size
+const RADIUS = 8; // px connector corner radius
+const GAP = 10; // px vertical approach into a marker after a turn
 const center = (level) => level * INDENT + MARKER / 2;
+
+const lineCls = "absolute z-0 border-p3-border dark:border-p3-border-dark";
 
 function EventMarker({ status }) {
   const { icon: Icon, className } = STATUS[status] ?? STATUS.info;
@@ -41,49 +46,84 @@ function GroupToggle({ open, onClick }) {
 }
 
 /**
- * A single connector running from this row's marker to the next visible row's
- * marker. Straight when the level is unchanged; a rounded elbow when entering
- * (step right) or leaving (step left) a nesting level — together these form one
- * continuous line that weaves into and out of nested groups.
+ * Vertical line + rounded turn leaving this marker toward the next visible row.
+ * Straight when the level is unchanged; an elbow (stopping a corner-radius short
+ * of the next marker, so the next row's incoming corner completes the curve)
+ * when stepping into or out of a nesting level.
  */
-function Connector({ level, nextLevel }) {
+function OutgoingLine({ level, nextLevel, top }) {
+  if (nextLevel == null) return null;
   const c = center(level);
-  const n = center(nextLevel);
-  const base = "absolute z-0 border-p3-border dark:border-p3-border-dark";
 
   if (nextLevel === level) {
     return (
-      <span
-        aria-hidden
-        className={cn(base, "border-l")}
-        style={{ bottom: 0, left: c, top: MARKER }}
-      />
+      <span aria-hidden className={cn(lineCls, "border-l")} style={{ bottom: 0, left: c, top }} />
     );
   }
+
+  const n = center(nextLevel);
   if (nextLevel > level) {
+    // step right: vertical at c, floor turning right toward n
     return (
       <span
         aria-hidden
-        className={cn(base, "rounded-bl-[10px] border-b border-l")}
-        style={{ bottom: 0, left: c, top: MARKER, width: n - c }}
+        className={cn(lineCls, "rounded-bl-[8px] border-b border-l")}
+        style={{ bottom: 0, left: c, top, width: n - RADIUS - c }}
       />
     );
   }
+  // step left: vertical at c, floor turning left toward n
   return (
     <span
       aria-hidden
-      className={cn(base, "rounded-br-[10px] border-r border-b")}
-      style={{ bottom: 0, left: n, top: MARKER, width: c - n }}
+      className={cn(lineCls, "rounded-br-[8px] border-r border-b")}
+      style={{ bottom: 0, left: n + RADIUS, top, width: c - RADIUS - n }}
     />
   );
 }
 
-function Row({ row, nextLevel }) {
+/**
+ * Rounded turn arriving at this marker from the previous row, plus a short
+ * vertical drop into the marker — only when the previous row sat at a different
+ * level. This is the second half of an elbow and gives the marker breathing
+ * room from the curve.
+ */
+function IncomingLine({ level, prevLevel }) {
+  if (prevLevel == null || prevLevel === level) return null;
+  const c = center(level);
+
+  if (prevLevel < level) {
+    // arrived from the left (stepping in): top-right rounded corner
+    return (
+      <span
+        aria-hidden
+        className={cn(lineCls, "rounded-tr-[8px] border-t border-r")}
+        style={{ height: GAP, left: c - RADIUS, top: 0, width: RADIUS }}
+      />
+    );
+  }
+  // arrived from the right (stepping out): top-left rounded corner
+  return (
+    <span
+      aria-hidden
+      className={cn(lineCls, "rounded-tl-[8px] border-t border-l")}
+      style={{ height: GAP, left: c, top: 0, width: RADIUS }}
+    />
+  );
+}
+
+function Row({ row, prevLevel, nextLevel }) {
   const { item, level, isGroup, open, onToggle } = row;
+  const stepped = prevLevel != null && prevLevel !== level;
+  const markerTop = stepped ? GAP : 0;
 
   return (
-    <div className="relative flex items-start gap-2" style={{ paddingLeft: level * INDENT }}>
-      {nextLevel != null && <Connector level={level} nextLevel={nextLevel} />}
+    <div
+      className="relative flex items-start gap-2"
+      style={{ paddingLeft: level * INDENT, paddingTop: markerTop }}
+    >
+      <IncomingLine level={level} prevLevel={prevLevel} />
+      <OutgoingLine level={level} nextLevel={nextLevel} top={markerTop + MARKER} />
 
       <div className="relative z-10 shrink-0">
         {isGroup ? (
@@ -170,7 +210,11 @@ export function Timeline({ items = [], className }) {
   const toggle = (key) =>
     setOpenIds((prev) => {
       const next = new Set(prev);
-      next.has(key) ? next.delete(key) : next.add(key);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
       return next;
     });
 
@@ -178,13 +222,24 @@ export function Timeline({ items = [], className }) {
 
   return (
     <div className={cn("flex flex-col", className)}>
-      {rows.map((row, i) => (
-        <Row
-          key={row.key}
-          nextLevel={i < rows.length - 1 ? rows[i + 1].level : null}
-          row={{ ...row, onToggle: () => toggle(row.key) }}
-        />
-      ))}
+      <AnimatePresence initial={false}>
+        {rows.map((row, i) => (
+          <motion.div
+            animate={{ height: "auto", opacity: 1 }}
+            className="overflow-hidden"
+            exit={{ height: 0, opacity: 0 }}
+            initial={{ height: 0, opacity: 0 }}
+            key={row.key}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+          >
+            <Row
+              nextLevel={i < rows.length - 1 ? rows[i + 1].level : null}
+              prevLevel={i > 0 ? rows[i - 1].level : null}
+              row={{ ...row, onToggle: () => toggle(row.key) }}
+            />
+          </motion.div>
+        ))}
+      </AnimatePresence>
     </div>
   );
 }
