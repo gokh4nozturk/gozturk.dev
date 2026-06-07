@@ -63,7 +63,7 @@ function OutgoingLine({ level, nextLevel, top }) {
 
   const n = center(nextLevel);
   if (nextLevel > level) {
-    // step right: vertical at c, floor turning right toward n
+    // step right: vertical (border-l) at c, floor turning right toward n
     return (
       <span
         aria-hidden
@@ -72,12 +72,13 @@ function OutgoingLine({ level, nextLevel, top }) {
       />
     );
   }
-  // step left: vertical at c, floor turning left toward n
+  // step left: vertical (border-r) at c, floor turning left toward n.
+  // Right edge is c + 1 so the 1px border lands on the same column as border-l.
   return (
     <span
       aria-hidden
       className={cn(lineCls, "rounded-br-[8px] border-r border-b")}
-      style={{ bottom: 0, left: n + RADIUS, top, width: c - RADIUS - n }}
+      style={{ bottom: 0, left: n + RADIUS, top, width: c + 1 - RADIUS - n }}
     />
   );
 }
@@ -93,12 +94,13 @@ function IncomingLine({ level, prevLevel }) {
   const c = center(level);
 
   if (prevLevel < level) {
-    // arrived from the left (stepping in): top-right rounded corner
+    // arrived from the left (stepping in): top-right rounded corner.
+    // Right edge is c + 1 so the 1px border lands on the same column as border-l.
     return (
       <span
         aria-hidden
         className={cn(lineCls, "rounded-tr-[8px] border-t border-r")}
-        style={{ height: GAP, left: c - RADIUS, top: 0, width: RADIUS }}
+        style={{ height: GAP, left: c - RADIUS, top: 0, width: RADIUS + 1 }}
       />
     );
   }
