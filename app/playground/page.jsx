@@ -92,7 +92,7 @@ const timelineItems = [
 
 export default function Playground() {
   return (
-    <div className="flex w-full flex-col items-start gap-12 pb-20">
+    <div className="flex w-full flex-col items-start gap-12 pb-28">
       <div>
         <h1 className="font-medium text-sm sm:text-base">Playground</h1>
         <p className="mt-2 text-neutral-400 text-xs">A sandbox for previewing UI components.</p>
