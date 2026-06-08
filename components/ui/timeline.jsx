@@ -24,7 +24,7 @@ const GAP = 10; // px vertical approach into a marker after a turn
 
 function EventMarker({ status }) {
   const { icon: Icon, className } = STATUS[status] ?? STATUS.info;
-  return <Icon className={cn("size-[18px]", className)} strokeWidth={2} />;
+  return <Icon className={cn("size-4.5", className)} strokeWidth={2} />;
 }
 
 function GroupToggle({ open, onClick }) {
@@ -32,7 +32,7 @@ function GroupToggle({ open, onClick }) {
     <button
       aria-expanded={open}
       aria-label={open ? "Collapse group" : "Expand group"}
-      className="flex size-[18px] items-center justify-center rounded-full border border-p3-border bg-p3-background-light text-neutral-500 transition-colors hover:text-p3-text dark:border-p3-border-dark dark:bg-p3-background-dark dark:hover:text-p3-text-dark"
+      className="flex size-4.5 items-center justify-center rounded-full border border-p3-border bg-p3-background-light text-neutral-500 transition-colors hover:text-p3-text dark:border-p3-border-dark dark:bg-p3-background-dark dark:hover:text-p3-text-dark"
       onClick={onClick}
       type="button"
     >
