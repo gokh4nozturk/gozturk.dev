@@ -7,6 +7,7 @@ import { cn } from "@lib/utils";
 import { GitFork, Star } from "lucide-react";
 
 const REPOS = [
+  "gokh4nozturk/rocket",
   "gokh4nozturk/orbit-absorb",
   "gokh4nozturk/chop-url",
   "gokh4nozturk/gauge",
