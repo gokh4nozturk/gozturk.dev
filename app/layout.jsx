@@ -54,6 +54,7 @@ export const metadata = {
     "programmer",
     "frontend developer",
   ],
+  metadataBase: new URL("https://gozturk.dev"),
   openGraph: {
     description: "Personal website of Gökhan Öztürk, a developer and crafter.",
     images: [
@@ -99,9 +100,40 @@ export const metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@id": "https://gozturk.dev/#person",
+      "@type": "Person",
+      description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+      jobTitle: "Developer",
+      name: "Gökhan Öztürk",
+      sameAs: ["https://github.com/gokh4nozturk", "https://twitter.com/gokh4nozturk"],
+      url: "https://gozturk.dev",
+    },
+    {
+      "@id": "https://gozturk.dev/#website",
+      "@type": "WebSite",
+      description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+      inLanguage: "en",
+      name: "Gökhan Öztürk – Developer, crafter",
+      publisher: { "@id": "https://gozturk.dev/#person" },
+      url: "https://gozturk.dev",
+    },
+  ],
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD requires raw injection
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          type="application/ld+json"
+        />
+      </head>
       <body
         className={cn(
           "mx-auto grid h-dvh grid-rows-[auto_1fr] items-center bg-p3-background-light px-4 pt-4 font-sans text-p3-text",
