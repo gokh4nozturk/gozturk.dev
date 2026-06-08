@@ -1,5 +1,4 @@
-import { Github as GithubIcon, Raindropio } from "@components/icons";
-import { Github } from "@lib/github";
+import { Raindropio } from "@components/icons";
 import Raindrop from "@lib/raindrop";
 import { Unsplash } from "@lib/unsplash";
 import { cn, timeAgo } from "@lib/utils";
@@ -27,31 +26,15 @@ function NowItem({ icon: Icon, label, title, href, date }) {
 }
 
 export default async function Now() {
-  const github = new Github();
   const raindrop = new Raindrop();
   const unsplash = new Unsplash();
 
-  const [activity, bookmark, photo] = await Promise.allSettled([
-    github.getLatestActivity("gokh4nozturk"),
+  const [bookmark, photo] = await Promise.allSettled([
     raindrop.getLatest(),
     unsplash.getLatestPhoto(),
   ]);
 
   const rows = [];
-
-  if (activity.status === "fulfilled" && activity.value) {
-    const a = activity.value;
-    rows.push(
-      <NowItem
-        date={timeAgo(a.date)}
-        href={a.url}
-        icon={GithubIcon}
-        key="github"
-        label="Pushed to"
-        title={a.message ? `${a.repo} · ${a.message}` : a.repo}
-      />,
-    );
-  }
 
   if (bookmark.status === "fulfilled" && bookmark.value) {
     const b = bookmark.value;
