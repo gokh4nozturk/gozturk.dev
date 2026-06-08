@@ -98,11 +98,7 @@ export default function Playground() {
         <p className="mt-2 text-neutral-400 text-xs">A sandbox for previewing UI components.</p>
       </div>
 
-      <ComponentShowcase
-        code="'@vault'"
-        description="Renders a timeline of events."
-        title="Timeline"
-      >
+      <ComponentShowcase description="Renders a timeline of events." title="Timeline">
         <Timeline items={timelineItems} />
       </ComponentShowcase>
     </div>
