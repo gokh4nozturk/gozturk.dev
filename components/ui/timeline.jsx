@@ -3,7 +3,7 @@
 import { cn } from "@lib/utils";
 import { ChevronRight, CircleCheck, CircleDot, CircleX, Clock, Plus } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
-import { useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 /**
  * Status → icon + color mapping for leaf timeline events.
@@ -19,12 +19,8 @@ const STATUS = {
 };
 
 const INDENT = 22; // px each nesting level shifts right
-const MARKER = 18; // px marker size
 const RADIUS = 8; // px connector corner radius
 const GAP = 10; // px vertical approach into a marker after a turn
-const center = (level) => level * INDENT + MARKER / 2;
-
-const lineCls = "absolute z-0 border-p3-border dark:border-p3-border-dark";
 
 function EventMarker({ status }) {
   const { icon: Icon, className } = STATUS[status] ?? STATUS.info;
@@ -45,89 +41,12 @@ function GroupToggle({ open, onClick }) {
   );
 }
 
-/**
- * Vertical line + rounded turn leaving this marker toward the next visible row.
- * Straight when the level is unchanged; an elbow (stopping a corner-radius short
- * of the next marker, so the next row's incoming corner completes the curve)
- * when stepping into or out of a nesting level.
- */
-function OutgoingLine({ level, nextLevel, top }) {
-  if (nextLevel == null) return null;
-  const c = center(level);
-
-  if (nextLevel === level) {
-    return (
-      <span aria-hidden className={cn(lineCls, "border-l")} style={{ bottom: 0, left: c, top }} />
-    );
-  }
-
-  const n = center(nextLevel);
-  if (nextLevel > level) {
-    // step right: vertical (border-l) at c, floor turning right toward n
-    return (
-      <span
-        aria-hidden
-        className={cn(lineCls, "rounded-bl-[8px] border-b border-l")}
-        style={{ bottom: 0, left: c, top, width: n - RADIUS - c }}
-      />
-    );
-  }
-  // step left: vertical (border-r) at c, floor turning left toward n.
-  // Right edge is c + 1 so the 1px border lands on the same column as border-l.
-  return (
-    <span
-      aria-hidden
-      className={cn(lineCls, "rounded-br-[8px] border-r border-b")}
-      style={{ bottom: 0, left: n + RADIUS, top, width: c + 1 - RADIUS - n }}
-    />
-  );
-}
-
-/**
- * Rounded turn arriving at this marker from the previous row, plus a short
- * vertical drop into the marker — only when the previous row sat at a different
- * level. This is the second half of an elbow and gives the marker breathing
- * room from the curve.
- */
-function IncomingLine({ level, prevLevel }) {
-  if (prevLevel == null || prevLevel === level) return null;
-  const c = center(level);
-
-  if (prevLevel < level) {
-    // arrived from the left (stepping in): top-right rounded corner.
-    // Right edge is c + 1 so the 1px border lands on the same column as border-l.
-    return (
-      <span
-        aria-hidden
-        className={cn(lineCls, "rounded-tr-[8px] border-t border-r")}
-        style={{ height: GAP, left: c - RADIUS, top: 0, width: RADIUS + 1 }}
-      />
-    );
-  }
-  // arrived from the right (stepping out): top-left rounded corner
-  return (
-    <span
-      aria-hidden
-      className={cn(lineCls, "rounded-tl-[8px] border-t border-l")}
-      style={{ height: GAP, left: c, top: 0, width: RADIUS }}
-    />
-  );
-}
-
-function Row({ row, prevLevel, nextLevel }) {
+function Row({ row, markerRef }) {
   const { item, level, isGroup, open, onToggle } = row;
-  const stepped = prevLevel != null && prevLevel !== level;
-  const markerTop = stepped ? GAP : 0;
 
   return (
-    <div
-      className="relative flex items-start gap-2"
-      style={{ paddingLeft: level * INDENT, paddingTop: markerTop }}
-    >
-      <IncomingLine level={level} prevLevel={prevLevel} />
-      <OutgoingLine level={level} nextLevel={nextLevel} top={markerTop + MARKER} />
-
-      <div className="relative z-10 shrink-0">
+    <div className="relative flex items-start gap-2" style={{ paddingLeft: level * INDENT }}>
+      <div className="relative z-10 shrink-0" ref={markerRef}>
         {isGroup ? (
           <GroupToggle onClick={onToggle} open={open} />
         ) : (
@@ -195,8 +114,54 @@ function flatten(items, openIds, level, parentKey, acc) {
 }
 
 /**
+ * Build a single SVG path that links each marker to the next as one continuous
+ * line. Same-column hops are straight verticals; column changes weave through a
+ * rounded elbow that descends at the source column, runs a floor, then drops
+ * into the next marker. Coordinates are snapped to the pixel grid (+0.5) so the
+ * 1px stroke stays crisp on the straight runs.
+ */
+function buildPath(points) {
+  const segs = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const a = points[i];
+    const b = points[i + 1];
+    if (!a || !b) continue;
+
+    const x1 = Math.round(a.cx) + 0.5;
+    const x2 = Math.round(b.cx) + 0.5;
+    const y1 = Math.round(a.bottom) + 0.5;
+    const y2 = Math.round(b.top) + 0.5;
+
+    if (x1 === x2) {
+      segs.push(`M${x1} ${y1}L${x2} ${y2}`);
+      continue;
+    }
+
+    const dir = x2 > x1 ? 1 : -1;
+    // Turn as we approach the next marker, leaving GAP of straight drop into it.
+    const turnY = Math.round(y2 - GAP) + 0.5;
+    // Don't let the elbow climb above where the line starts on short rows.
+    const r = Math.min(RADIUS, Math.max(0, turnY - y1), Math.abs(x2 - x1) / 2);
+
+    segs.push(
+      `M${x1} ${y1}` +
+        `L${x1} ${turnY - r}` +
+        `Q${x1} ${turnY} ${x1 + dir * r} ${turnY}` +
+        `L${x2 - dir * r} ${turnY}` +
+        `Q${x2} ${turnY} ${x2} ${turnY + r}` +
+        `L${x2} ${y2}`,
+    );
+  }
+  return segs.join(" ");
+}
+
+/**
  * Timeline — renders a (optionally nested) timeline of events as one continuous
  * line that weaves into and out of collapsible groups.
+ *
+ * The connector is a single SVG path measured from the live marker positions, so
+ * it stays seamless across row boundaries (no per-row border segments to align)
+ * and re-traces itself as groups expand/collapse via a ResizeObserver.
  *
  * @param {Object[]} items - event nodes
  * @param {string}   items[].title       - event label (omit on a group to render "N more events")
@@ -208,6 +173,10 @@ function flatten(items, openIds, level, parentKey, acc) {
  */
 export function Timeline({ items = [], className }) {
   const [openIds, setOpenIds] = useState(() => collectOpen(items, "", new Set()));
+  const [path, setPath] = useState("");
+
+  const containerRef = useRef(null);
+  const markerRefs = useRef(new Map());
 
   const toggle = (key) =>
     setOpenIds((prev) => {
@@ -222,10 +191,46 @@ export function Timeline({ items = [], className }) {
 
   const rows = flatten(items, openIds, 0, "", []);
 
+  const measure = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const base = container.getBoundingClientRect();
+    const points = rows.map((row) => {
+      const el = markerRefs.current.get(row.key);
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      return {
+        bottom: r.bottom - base.top,
+        cx: r.left - base.left + r.width / 2,
+        top: r.top - base.top,
+      };
+    });
+    setPath(buildPath(points));
+  }, [rows]);
+
+  // Re-trace after every commit (open/close, content changes) and on any size
+  // change — the latter covers the height animation frames and viewport resizes.
+  useLayoutEffect(() => {
+    measure();
+    const container = containerRef.current;
+    if (!container) return;
+    const ro = new ResizeObserver(() => measure());
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [measure]);
+
   return (
-    <div className={cn("flex flex-col", className)}>
+    <div className={cn("relative flex flex-col", className)} ref={containerRef}>
+      <svg
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full overflow-visible text-p3-border dark:text-p3-border-dark"
+        fill="none"
+      >
+        <path d={path} stroke="currentColor" strokeWidth="1" />
+      </svg>
+
       <AnimatePresence initial={false}>
-        {rows.map((row, i) => (
+        {rows.map((row) => (
           <motion.div
             animate={{ height: "auto", opacity: 1 }}
             className="overflow-hidden"
@@ -235,8 +240,10 @@ export function Timeline({ items = [], className }) {
             transition={{ duration: 0.18, ease: "easeOut" }}
           >
             <Row
-              nextLevel={i < rows.length - 1 ? rows[i + 1].level : null}
-              prevLevel={i > 0 ? rows[i - 1].level : null}
+              markerRef={(el) => {
+                if (el) markerRefs.current.set(row.key, el);
+                else markerRefs.current.delete(row.key);
+              }}
               row={{ ...row, onToggle: () => toggle(row.key) }}
             />
           </motion.div>
