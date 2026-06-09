@@ -26,6 +26,41 @@ export default function About() {
         I am an enthusiast for well-designed products, free & open source software contributor &
         maintainer, and automator of anything that I can.
       </p>
+      <div className="mt-6">
+        <p className="mb-2 text-p3-text-light">Selected work</p>
+        <ul className="grid gap-1">
+          <li>
+            <AnimatedLink href="https://gokh4nozturk.github.io/orbit-absorb/" name="orbit-absorb">
+              orbit-absorb
+            </AnimatedLink>
+            <span className="text-p3-text-light">
+              {" "}
+              — dependency-free orbiting-icons web component
+            </span>
+          </li>
+          <li>
+            <AnimatedLink href="https://linguolink.dev" name="LinguLink">
+              LinguLink
+            </AnimatedLink>
+            <span className="text-p3-text-light">
+              {" "}
+              — localization platform, dashboard + REST API
+            </span>
+          </li>
+          <li>
+            <AnimatedLink href="https://rocket.gozturk.dev" name="rocket">
+              rocket
+            </AnimatedLink>
+            <span className="text-p3-text-light"> — my own shadcn component registry</span>
+          </li>
+          <li>
+            <AnimatedLink href="https://github.com/gokh4nozturk/chop-url" name="chop-url">
+              chop-url
+            </AnimatedLink>
+            <span className="text-p3-text-light"> — serverless URL shortener</span>
+          </li>
+        </ul>
+      </div>
       {/* <br />
       <br />
       <AnimatedLink href="https://cal.com/gokhanozturk/15min" name="Cal.com">
