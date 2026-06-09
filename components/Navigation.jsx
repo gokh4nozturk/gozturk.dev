@@ -4,18 +4,13 @@ import { CircularMenu } from "@components/ground/menu";
 import { AnimatedTabs } from "@components/luxe/animated-tabs";
 import ThankYou from "@components/ThankYou";
 import { cn } from "@lib/utils";
-import { Book, Bookmark, FileUser, Home, Image } from "lucide-react";
+import { Bookmark, FileUser, Home, Image } from "lucide-react";
 
 const navItems = [
   {
     icon: Home,
     name: "Home",
     path: "/",
-  },
-  {
-    icon: Book,
-    name: "Blog",
-    path: "/blog",
   },
   {
     icon: Image,

@@ -39,7 +39,6 @@ export function Header() {
       </div>
       {/* <nav className="my-3 sm:my-6 flex items-center">
         <NavItem href="/" name="home" />
-        <NavItem href="/blog" name="blog" />
         <NavItem href="/photos" name="photos" />
         <NavItem href="/bookmarks" name="bookmarks" />
         <NavItem href="/resume" name="cv" />
