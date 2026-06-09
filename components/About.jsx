@@ -54,10 +54,13 @@ export default function About() {
             <span className="text-p3-text-light"> — my own shadcn component registry</span>
           </li>
           <li>
-            <AnimatedLink href="https://github.com/gokh4nozturk/chop-url" name="chop-url">
-              chop-url
+            <AnimatedLink href="https://gauge.gokhanozturk.io" name="gauge">
+              gauge
             </AnimatedLink>
-            <span className="text-p3-text-light"> — serverless URL shortener</span>
+            <span className="text-p3-text-light">
+              {" "}
+              — customizable circular gauge component for Vue
+            </span>
           </li>
         </ul>
       </div>
