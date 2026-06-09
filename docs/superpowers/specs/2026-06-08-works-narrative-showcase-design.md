@@ -14,7 +14,7 @@ metadata rather than authored content, it under-represents the work:
 - **No impact / narrative** — a repo name plus a star count tells no story.
 - **Boilerplate leakage** — the site surfaces GitHub's default metadata. Real
   examples: `rocket` and `orbit-absorb` have *empty* GitHub descriptions;
-  `lingulink` shows description "Test" and repo name "app"; `rocket`'s README is
+  `Linguolink` shows description "Test" and repo name "app"; `rocket`'s README is
   the unmodified `create-next-app` template.
 
 Net effect: the author cannot show the site and say "look, this is what I've
@@ -57,7 +57,7 @@ Rejected alternatives:
 │  │ └────────┘  SVG · CSS · Web Components            │ │
 │  │             → live   → code                       │ │
 │  ├──────────────────────────────────────────────────┤ │
-│  │  ... LinguLink / rocket / chop-url (same strip)   │ │
+│  │  ... Linguolink / rocket / chop-url (same strip)   │ │
 │  └──────────────────────────────────────────────────┘ │
 │                                                        │
 │  MORE ON GITHUB                                        │
@@ -76,7 +76,7 @@ A static array — `lib/works.js` exporting `FEATURED_WORKS`. Each entry:
 
 | field      | type       | notes                                            |
 |------------|------------|--------------------------------------------------|
-| `name`     | string     | display title (e.g. "LinguLink", "orbit-absorb") |
+| `name`     | string     | display title (e.g. "Linguolink", "orbit-absorb") |
 | `role`     | enum       | `"Creator"` \| `"Contributor"` \| `"Maintainer"` |
 | `story`    | string     | the authored paragraph                           |
 | `tags`     | string[]   | tech chips (e.g. `["Next.js", "Drizzle"]`)       |
@@ -105,7 +105,7 @@ four featured repos are removed from this list so they don't appear twice.
    > live: https://gokh4nozturk.github.io/orbit-absorb/ · code:
    > https://github.com/gokh4nozturk/orbit-absorb
 
-2. **LinguLink** · Creator · full-stack
+2. **Linguolink** · Creator · full-stack
    > A localization management platform built with Next.js 15 and React 19 — a
    > web dashboard and a REST API for managing projects, translation keys, and
    > multi-language content. A real monorepo: Drizzle/Postgres, CI/CD, test
