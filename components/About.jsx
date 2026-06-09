@@ -39,8 +39,8 @@ export default function About() {
             </span>
           </li>
           <li>
-            <AnimatedLink href="https://linguolink.dev" name="LinguLink">
-              LinguLink
+            <AnimatedLink href="https://linguolink.dev" name="Linguolink">
+              Linguolink
             </AnimatedLink>
             <span className="text-p3-text-light">
               {" "}
