@@ -2,12 +2,13 @@ import AnimatedLink from "@components/AnimatedLink";
 import { BrandScroller } from "@components/hextaui/brand-scroller";
 import TitleDescription from "@components/TitleDescription";
 import { ScrollArea } from "@components/ui/scroll-area";
+import FeaturedWork from "@components/works/FeaturedWork";
 import { Github } from "@lib/github";
 import { cn } from "@lib/utils";
+import { FEATURED_REPOS, FEATURED_WORKS } from "@lib/works";
 import { GitFork, Star } from "lucide-react";
 
 const REPOS = [
-  "gokh4nozturk/rocket",
   "gokh4nozturk/orbit-absorb",
   "gokh4nozturk/chop-url",
   "gokh4nozturk/gauge",
@@ -39,14 +40,20 @@ const LANG_COLORS = {
 
 export const revalidate = 3600; // 60 * 60 seconds
 
+const listRepos = REPOS.filter((repo) => !FEATURED_REPOS.includes(repo));
+
 export default async function Works() {
   const github = new Github();
-  const works = await Promise.all(
-    REPOS.map(async (repo) => {
-      const repoData = await github.getRepo(repo);
-      return repoData;
+
+  const featuredStars = await Promise.all(
+    FEATURED_WORKS.map(async (work) => {
+      if (!work.repo) return null;
+      const data = await github.getRepo(work.repo);
+      return data?.stargazers_count ?? null;
     }),
   );
+
+  const works = await Promise.all(listRepos.map((repo) => github.getRepo(repo)));
 
   return (
     <div className="relative w-full">
@@ -56,10 +63,24 @@ export default async function Works() {
       />
       <BrandScroller className="absolute inset-0 top-18 z-30 md:top-20" />
       <ScrollArea className="mb-24 max-h-[calc(100dvh-15rem)]">
-        <div className="grid divide-y py-10">
-          {works.map((work, index) => (
-            <Work data={work} key={REPOS[index]} />
-          ))}
+        <div className="py-10">
+          <h2 className="font-semibold text-p3-text-light text-xs uppercase tracking-wide">
+            Featured
+          </h2>
+          <div className="divide-y">
+            {FEATURED_WORKS.map((work, index) => (
+              <FeaturedWork key={work.name} stars={featuredStars[index]} work={work} />
+            ))}
+          </div>
+
+          <h2 className="mt-10 font-semibold text-p3-text-light text-xs uppercase tracking-wide">
+            More on GitHub
+          </h2>
+          <div className="grid divide-y">
+            {works.map((work, index) => (
+              <Work data={work} key={listRepos[index]} />
+            ))}
+          </div>
         </div>
       </ScrollArea>
     </div>
