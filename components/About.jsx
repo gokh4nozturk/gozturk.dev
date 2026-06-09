@@ -30,15 +30,6 @@ export default function About() {
         <p className="mb-2 text-p3-text-light">Selected work</p>
         <ul className="grid gap-1">
           <li>
-            <AnimatedLink href="https://gokh4nozturk.github.io/orbit-absorb/" name="orbit-absorb">
-              orbit-absorb
-            </AnimatedLink>
-            <span className="text-p3-text-light">
-              {" "}
-              — dependency-free orbiting-icons web component
-            </span>
-          </li>
-          <li>
             <AnimatedLink href="https://linguolink.dev" name="Linguolink">
               Linguolink
             </AnimatedLink>
@@ -52,6 +43,15 @@ export default function About() {
               rocket
             </AnimatedLink>
             <span className="text-p3-text-light"> — my own shadcn component registry</span>
+          </li>
+          <li>
+            <AnimatedLink href="https://gokh4nozturk.github.io/orbit-absorb/" name="orbit-absorb">
+              orbit-absorb
+            </AnimatedLink>
+            <span className="text-p3-text-light">
+              {" "}
+              — dependency-free orbiting-icons web component
+            </span>
           </li>
           <li>
             <AnimatedLink href="https://gauge.gokhanozturk.io" name="gauge">
