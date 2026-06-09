@@ -10,7 +10,7 @@
 
 > **Note on commits & tests:** This repo has **no test runner** (per `CLAUDE.md`), so verification is `pnpm lint` + `pnpm build` + a visual check at `localhost:3000/works`, not unit tests. The repo owner's standing rule is **no commits without explicit permission** — perform the commit step only after the user approves.
 
-> **Note on the LinguLink URL:** The live URL is assumed to be `https://app.linguolink.com`. Task 1 includes a step to confirm/correct it before proceeding.
+> **Note on the Linguolink URL:** The live URL is assumed to be `https://app.linguolink.com`. Task 1 includes a step to confirm/correct it before proceeding.
 
 ---
 
@@ -19,9 +19,9 @@
 **Files:**
 - Create: `lib/works.js`
 
-- [ ] **Step 1: Confirm the LinguLink live URL**
+- [ ] **Step 1: Confirm the Linguolink live URL**
 
-The repo list entry is `gokh4nozturk/app.linguolink` and the README title is "Linguolink". Ask the user (or check the deployed domain) whether the live URL is `https://app.linguolink.com`, `.dev`, or other. Use the confirmed value in Step 2's `liveUrl` for LinguLink. If unconfirmable, default to `https://app.linguolink.com`.
+The repo list entry is `gokh4nozturk/app.linguolink` and the README title is "Linguolink". Ask the user (or check the deployed domain) whether the live URL is `https://app.linguolink.com`, `.dev`, or other. Use the confirmed value in Step 2's `liveUrl` for Linguolink. If unconfirmable, default to `https://app.linguolink.com`.
 
 - [ ] **Step 2: Create the data file**
 
@@ -44,7 +44,7 @@ export const FEATURED_WORKS = [
     codeUrl: "https://github.com/gokh4nozturk/app",
     image: "/works/linguolink.png",
     liveUrl: "https://app.linguolink.com",
-    name: "LinguLink",
+    name: "Linguolink",
     repo: "gokh4nozturk/app.linguolink",
     role: "Creator",
     story:
@@ -335,7 +335,7 @@ Expected: build succeeds, `/works` compiles with no type/import errors.
 
 Run: `pnpm dev`, open `http://localhost:3000/works`.
 Expected:
-- "Featured" section shows 4 strips (orbit-absorb, LinguLink, rocket, chop-url) with image left / story right on desktop, stacked on mobile.
+- "Featured" section shows 4 strips (orbit-absorb, Linguolink, rocket, chop-url) with image left / story right on desktop, stacked on mobile.
 - Each strip has a role badge, tag chips, and `live` / `code` links.
 - "More on GitHub" section lists the remaining repos; none of the 4 featured repos appear twice.
 
@@ -362,7 +362,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - `p3-*` tokens, `cn()`, `AnimatedLink`, Biome sorting → Tasks 2 & 4. ✓
 - Untouched: nav, other routes, `lib/github.js` → respected. ✓
 
-**Placeholder scan:** No TBD/TODO in steps. The LinguLink URL is handled by an explicit confirm step (Task 1 Step 1), not left vague.
+**Placeholder scan:** No TBD/TODO in steps. The Linguolink URL is handled by an explicit confirm step (Task 1 Step 1), not left vague.
 
 **Type consistency:** `FEATURED_WORKS` field names (`name`, `role`, `story`, `tags`, `image`, `liveUrl`, `codeUrl`, `repo`) are used identically in `FeaturedWork` (Task 2) and the page (Task 4). `FEATURED_REPOS` exported in Task 1 and consumed in Task 4. `stars` prop passed in Task 4 matches `FeaturedWork({ work, stars })` in Task 2.
 
