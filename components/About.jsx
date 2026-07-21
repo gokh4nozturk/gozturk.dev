@@ -54,7 +54,7 @@ export default function About() {
             </span>
           </li>
           <li>
-            <AnimatedLink href="https://gauge.gokhanozturk.io" name="gauge">
+            <AnimatedLink href="https://gauge.gozturk.dev" name="gauge">
               gauge
             </AnimatedLink>
             <span className="text-p3-text-light">
