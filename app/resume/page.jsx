@@ -13,7 +13,7 @@ import {
 const resumeToc = [
   { depth: 2, title: "Summary", url: "#summary" },
   { depth: 2, title: "Experience", url: "#experience" },
-  { depth: 3, title: "Teknasyon Tech", url: "#teknasyon-tech" },
+  { depth: 3, title: "Rockads", url: "#rockads" },
   { depth: 3, title: "Phanka Group", url: "#phanka-group" },
   { depth: 2, title: "Projects", url: "#projects" },
   { depth: 3, title: "Rocket UI", url: "#rocket-ui" },

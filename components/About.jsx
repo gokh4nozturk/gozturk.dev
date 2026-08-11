@@ -4,7 +4,11 @@ export default function About() {
   return (
     <div className="text-sm sm:text-base">
       <p>
-        Hi 👋 my name is Gökhan, a software engineer at{" "}
+        Hi 👋 my name is Gökhan, a product engineer at{" "}
+        <AnimatedLink color="rockads" href="https://rockads.com/?ref=gozturk.dev" name="Rockads">
+          Rockads
+        </AnimatedLink>
+        , part of{" "}
         <AnimatedLink
           color="teknasyon"
           href="https://teknasyon.com/en/?ref=gozturk.dev"
@@ -12,15 +16,7 @@ export default function About() {
         >
           Teknasyon
         </AnimatedLink>
-        . I am working on{" "}
-        <AnimatedLink
-          color="rockads"
-          href="https://rockads.com/?ref=gozturk.dev"
-          name="rockads.com"
-        >
-          rockads.com
-        </AnimatedLink>{" "}
-        and in-house solutions.
+        .
       </p>
       <p>
         I am an enthusiast for well-designed products, free & open source software contributor &
