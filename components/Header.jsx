@@ -33,7 +33,7 @@ export function Header() {
           {mounted ? (
             <DarkModeToggle />
           ) : (
-            <div className="h-8 w-[88px] animate-pulse rounded-md bg-p3-background-dark dark:bg-p3-background-light" />
+            <div className="h-8 w-22 animate-pulse rounded-md bg-p3-background-dark dark:bg-p3-background-light" />
           )}
         </div>
       </div>
