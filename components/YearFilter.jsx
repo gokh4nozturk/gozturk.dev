@@ -20,7 +20,7 @@ export default function YearFilter({ year = "all" }) {
   return (
     <div className="relative">
       <select
-        className="mt-2 block w-full min-w-20 rounded-md border border-p3-border bg-p3-background-light py-0.5 text-sm outline-none transition-colors hover:border-p3-border focus:border-p3-border dark:border-p3-border-dark dark:bg-p3-background-dark dark:focus:border-p3-border-dark dark:hover:border-p3-border-dark"
+        className="mt-2 block w-full min-w-24 rounded-md border border-p3-border bg-p3-background-light py-0.5 pl-2 text-sm outline-none transition-colors hover:border-p3-border focus:border-p3-border dark:border-p3-border-dark dark:bg-p3-background-dark dark:focus:border-p3-border-dark dark:hover:border-p3-border-dark"
         defaultValue={year.split("-")[0] || "all"}
         id="year"
         name="year"
