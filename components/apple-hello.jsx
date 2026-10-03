@@ -3,25 +3,70 @@
 
 import { cn } from "@lib/utils";
 import { motion } from "motion/react";
+import { useMemo } from "react";
 
-// Shared timing formula for the multi-stroke scripts so every language draws
-// with the same rhythm. Strokes overlap (STROKE_DURATION > STROKE_STAGGER) so
-// the easeInOut deceleration of one stroke is masked by the next one starting,
-// removing the "stop-and-go" pulsing and keeping the writing continuous.
-const STROKE_DURATION = 0.8;
-const STROKE_STAGGER = 0.55; // ~0.25s overlap between consecutive strokes
+// Shared timing for the multi-stroke scripts so every language is written like
+// one pen moving at a constant speed: each stroke's duration is proportional to
+// its length and strokes run strictly one after another (no overlap), so a
+// letter is never drawn before the previous one is finished. A short pause is
+// added only where the pen actually lifts (the next stroke starts elsewhere).
+const PEN_SPEED = 700; // viewBox units per second, close to the English pace
+const PEN_LIFT_PAUSE = 0.12; // seconds
+const PEN_LIFT_DISTANCE = 2; // viewBox units
 
-function strokeTransition(index, speed) {
-  const delay = index * STROKE_STAGGER * speed;
+// The stroke paths only use absolute "M x y" followed by cubic "C" segments.
+function measureStroke(d) {
+  const n = d.match(/-?\d*\.?\d+(?:e-?\d+)?/gi).map(Number);
+  const start = [n[0], n[1]];
+  let [x, y] = start;
+  let length = 0;
+
+  for (let i = 2; i + 5 < n.length; i += 6) {
+    const [x1, y1, x2, y2, x3, y3] = n.slice(i, i + 6);
+    let [px, py] = [x, y];
+    for (let s = 1; s <= 16; s++) {
+      const t = s / 16;
+      const u = 1 - t;
+      const qx = u * u * u * x + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x3;
+      const qy = u * u * u * y + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3;
+      length += Math.hypot(qx - px, qy - py);
+      [px, py] = [qx, qy];
+    }
+    [x, y] = [x3, y3];
+  }
+
+  return { end: [x, y], length, start };
+}
+
+function strokeTimeline(strokes) {
+  let time = 0;
+  let prevEnd = null;
+
+  return strokes.map((stroke) => {
+    const { end, length, start } = measureStroke(typeof stroke === "string" ? stroke : stroke.d);
+    if (prevEnd && Math.hypot(start[0] - prevEnd[0], start[1] - prevEnd[1]) > PEN_LIFT_DISTANCE) {
+      time += PEN_LIFT_PAUSE;
+    }
+    const timing = { delay: time, duration: length / PEN_SPEED };
+    time += timing.duration;
+    prevEnd = end;
+    return timing;
+  });
+}
+
+function strokeTransition({ delay, duration }, speed) {
   return {
-    delay,
-    duration: STROKE_DURATION * speed,
-    ease: "easeInOut",
-    opacity: { delay, duration: STROKE_DURATION * 0.5 * speed },
+    delay: delay * speed,
+    duration: duration * speed,
+    ease: "linear",
+    // Only hides the round line cap dot before the stroke starts.
+    opacity: { delay: delay * speed, duration: 0 },
   };
 }
 
 function HelloStrokes({ strokes, speed, onAnimationComplete }) {
+  const timeline = useMemo(() => strokeTimeline(strokes), [strokes]);
+
   return (
     <>
       {strokes.map((stroke, index) => {
@@ -35,10 +80,10 @@ function HelloStrokes({ strokes, speed, onAnimationComplete }) {
             className={strokeClassName}
             d={d}
             initial={{ opacity: 0, pathLength: 0 }}
-            key={index}
+            key={d}
             onAnimationComplete={isLast ? onAnimationComplete : undefined}
             style={{ strokeLinecap: "round" }}
-            transition={strokeTransition(index, speed)}
+            transition={strokeTransition(timeline[index], speed)}
           />
         );
       })}
