@@ -15,9 +15,11 @@ import { useState } from "react";
 
 // Fill a fixed-size box and let each SVG's intrinsic preserveAspectRatio
 // center the glyph inside it. Keeping the box constant across every language
-// is what prevents layout shift (CLS): the scripts have very different widths
-// (Spanish ~225px vs Turkish ~414px at this height), so sizing by height alone
-// would make the centered element jump horizontally on every swap.
+// is what prevents layout shift (CLS): the scripts have very different widths,
+// so sizing by width would make the centered element jump on every swap.
+// Every SVG shares the same viewBox height (279, room for the j/р descenders)
+// and baseline, so all languages render at the same scale, stroke weight and
+// baseline instead of descender scripts (French/Russian) shrinking to fit.
 const helloEffectClass = "h-full w-full";
 
 export default function HelloAnimation() {
@@ -27,10 +29,10 @@ export default function HelloAnimation() {
       {/* Fixed-size, stable box: both width and height stay constant across every
           language, so the glyph never shifts (no CLS). Each SVG fills this exact
           box and its own preserveAspectRatio ("xMidYMid meet") scales + centers
-          the glyph inside — so wider scripts (Turkish) and taller scripts
-          (French/Spanish) all fit without clipping. max-w caps it on desktop;
-          w-full keeps it responsive and overflow-free on narrow viewports. */}
-      <div className={cn("relative h-16 w-full max-w-104 overflow-hidden sm:h-20")}>
+          the glyph inside. Height includes descender room below the baseline.
+          max-w caps it on desktop; w-full keeps it responsive and overflow-free
+          on narrow viewports. */}
+      <div className={cn("relative h-22 w-full max-w-104 overflow-hidden sm:h-28")}>
         <AnimatePresence mode="popLayout">
           <motion.div
             animate={{ opacity: 1 }}
