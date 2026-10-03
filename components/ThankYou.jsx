@@ -15,6 +15,7 @@ export default function ThankYou({ className }) {
         "hover:animate-tada",
       )}
       href="https://www.buymeacoffee.com/gokhanozturk"
+      target="_blank"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-black/10 sm:size-10">
         <Buymeacoffee />
