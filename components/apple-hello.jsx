@@ -87,7 +87,7 @@ export function AppleHelloVietnameseEffect({
       stroke="currentColor"
       strokeWidth="14.8883"
       transition={{ duration: 0.5 }}
-      viewBox="0 0 1009 200"
+      viewBox="0 0 1009 279"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
@@ -113,7 +113,7 @@ export function AppleHelloEnglishEffect({ className, speed = 1, onAnimationCompl
       stroke="currentColor"
       strokeWidth="14.8883"
       transition={{ duration: 0.5 }}
-      viewBox="0 0 638 200"
+      viewBox="0 0 638 279"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
@@ -173,7 +173,7 @@ export function AppleHelloTurkishEffect({ className, speed = 1, onAnimationCompl
       stroke="currentColor"
       strokeWidth="14.8883"
       transition={{ duration: 0.5 }}
-      viewBox="0 0 1050 203"
+      viewBox="0 0 1050 279"
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
@@ -239,7 +239,7 @@ export function AppleHelloSpanishEffect({ className, speed = 1, onAnimationCompl
       stroke="currentColor"
       strokeWidth="14.8883"
       transition={{ duration: 0.5 }}
-      viewBox="0 0 562 200"
+      viewBox="0 0 562 279"
       {...props}
     >
       <title>hola</title>
@@ -276,7 +276,7 @@ export function AppleHelloRussianEffect({ className, speed = 1, onAnimationCompl
       stroke="currentColor"
       strokeWidth="14.8883"
       transition={{ duration: 0.5 }}
-      viewBox="0 0 924 264"
+      viewBox="0 0 924 279"
       {...props}
     >
       <title>привет</title>
@@ -314,7 +314,7 @@ export function AppleHelloJapaneseEffect({ className, speed = 1, onAnimationComp
       stroke="currentColor"
       strokeWidth="14.8883"
       transition={{ duration: 0.5 }}
-      viewBox="0 0 878 200"
+      viewBox="0 0 878 279"
       {...props}
     >
       <title>こんにちは</title>
