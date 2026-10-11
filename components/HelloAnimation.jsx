@@ -37,7 +37,10 @@ const GLASS_STROKE_WIDTH = 24;
 // Every SVG shares the same viewBox height (279, room for the j/р descenders)
 // and baseline, so all languages render at the same scale, stroke weight and
 // baseline instead of descender scripts (French/Russian) shrinking to fit.
-const helloEffectClass = "h-full w-full";
+// overflow-visible: the thick glass stroke (and its shadow) reaches past the
+// viewBox edges on glyphs that touch them (e.g. the top of "h"), which the
+// SVG's default overflow: hidden would clip.
+const helloEffectClass = "h-full w-full overflow-visible";
 
 // Theme-aware glass tints, read by the filter's flood colors through CSS vars.
 const glassThemeClass = cn(
