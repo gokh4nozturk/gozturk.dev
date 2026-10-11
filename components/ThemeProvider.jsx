@@ -120,11 +120,7 @@ export function DarkModeToggle() {
       <motion.span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute top-1 left-1 z-0 h-6 overflow-hidden rounded-sm",
-          "border border-white/50 bg-gradient-to-b from-white/40 to-white/10 backdrop-blur-md backdrop-saturate-150",
-          "shadow-[inset_0_1px_0_rgb(255_255_255/0.7),inset_0_-1px_2px_rgb(0_0_0/0.06),0_2px_6px_rgb(0_0_0/0.12)]",
-          "dark:border-white/15 dark:from-white/20 dark:to-white/5",
-          "dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.25),inset_0_-1px_2px_rgb(0_0_0/0.3),0_2px_8px_rgb(0_0_0/0.4)]",
+          "pointer-events-none absolute top-1 left-1 z-0 h-6 rounded-sm bg-p3-primary/20 ring-1 ring-p3-primary/40 dark:bg-p3-primary/30 dark:ring-p3-primary/50",
           "transition-opacity duration-200",
           isReady ? "opacity-100" : "opacity-0",
         )}
