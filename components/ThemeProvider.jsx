@@ -4,6 +4,7 @@ import { cn } from "@lib/utils";
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import * as React from "react";
+import { flushSync } from "react-dom";
 
 const THEME_META = {
   dark: { Icon: MoonIcon, label: "Dark theme" },
@@ -31,7 +32,9 @@ export function DarkModeToggle() {
 
   const applyTheme = (next) => {
     if (!next || next === theme) return;
-    const run = () => setTheme(next);
+    // The DOM must update synchronously inside the view transition callback, otherwise
+    // Safari snapshots the old theme as the "new" state and the reveal animation breaks.
+    const run = () => flushSync(() => setTheme(next));
     if (typeof document !== "undefined" && document.startViewTransition) {
       document.startViewTransition(run);
     } else {
