@@ -54,17 +54,23 @@ function strokeTimeline(strokes) {
   });
 }
 
-// Remaps the constant-speed timeline through one ease-in-out curve over the
-// whole word, so the pen starts gently, flows faster through the middle and
-// settles at the end instead of moving at a mechanical constant speed. Strokes
-// keep their order and never overlap; the total duration is unchanged.
+// Remaps the constant-speed timeline so the pen eases in and out over the whole
+// word: it settles into the first and last strokes and flows a little faster
+// through the middle. A stroke that starts a fraction s of the way through the
+// writing starts at the time where an ease-in-out curve reaches s (its inverse),
+// blended half-and-half with linear time so the ends slow down without
+// crawling. Strokes keep their order and never overlap; the total duration is
+// unchanged.
 function easeTimeline(timeline) {
   const total = timeline.at(-1).delay + timeline.at(-1).duration;
-  const ease = (t) => total * (0.5 - 0.5 * Math.cos((Math.PI * t) / total));
+  const time = (t) => {
+    const s = Math.min(1, Math.max(0, t / total));
+    return total * (0.5 * s + (0.5 * Math.acos(1 - 2 * s)) / Math.PI);
+  };
 
   return timeline.map(({ delay, duration }) => {
-    const start = ease(delay);
-    return { delay: start, duration: ease(delay + duration) - start };
+    const start = time(delay);
+    return { delay: start, duration: time(delay + duration) - start };
   });
 }
 
