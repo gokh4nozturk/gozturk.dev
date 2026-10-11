@@ -78,6 +78,41 @@ function strokeTransition({ delay, duration }, speed) {
   };
 }
 
+// Renders the strokes for an optional glass material (see HelloAnimation):
+// - live: the strokes drawn through `glass.filter`;
+// - reveal: a pre-rendered image of the finished word, uncovered by a mask made
+//   of the animated strokes, over the strokes drawn through the cheap
+//   `glass.reveal.filter` (its shadow). Nothing expensive re-runs per frame.
+// The strokes stay mounted at the same place in both modes, so switching never
+// restarts their animation. They are rendered twice (mask + visible copy), so
+// onAnimationComplete fires twice per word.
+function HelloContent({ children, glass }) {
+  if (!glass) return children;
+  const { maskId, reveal } = glass;
+
+  return (
+    <>
+      <mask id={maskId}>
+        <g className="[&_path]:stroke-white" strokeWidth={glass.maskStrokeWidth}>
+          {children}
+        </g>
+      </mask>
+      <g filter={reveal ? reveal.filter : glass.filter}>{children}</g>
+      {reveal && (
+        <image
+          height={reveal.height}
+          href={reveal.href}
+          mask={`url(#${maskId})`}
+          preserveAspectRatio="none"
+          width={reveal.width}
+          x={reveal.x}
+          y={reveal.y}
+        />
+      )}
+    </>
+  );
+}
+
 function HelloStrokes({ strokes, speed, onAnimationComplete }) {
   const timeline = useMemo(() => easeTimeline(strokeTimeline(strokes)), [strokes]);
 
@@ -133,7 +168,7 @@ const VIETNAMESE_STROKES = [
 
 export function AppleHelloVietnameseEffect({
   className,
-  contentFilter,
+  glass,
   speed = 1,
   onAnimationComplete,
   ...props
@@ -152,20 +187,20 @@ export function AppleHelloVietnameseEffect({
       {...props}
     >
       <title>xin chào</title>
-      <g filter={contentFilter}>
+      <HelloContent glass={glass}>
         <HelloStrokes
           onAnimationComplete={onAnimationComplete}
           speed={speed}
           strokes={VIETNAMESE_STROKES}
         />
-      </g>
+      </HelloContent>
     </motion.svg>
   );
 }
 
 export function AppleHelloEnglishEffect({
   className,
-  contentFilter,
+  glass,
   speed = 1,
   onAnimationComplete,
   ...props
@@ -186,7 +221,7 @@ export function AppleHelloEnglishEffect({
       {...props}
     >
       <title>hello</title>
-      <g filter={contentFilter}>
+      <HelloContent glass={glass}>
         {/* h1 */}
         <motion.path
           animate={{ opacity: 1, pathLength: 1 }}
@@ -214,7 +249,7 @@ export function AppleHelloEnglishEffect({
             opacity: { delay: calc(0.7), duration: 0.7 },
           }}
         />
-      </g>
+      </HelloContent>
     </motion.svg>
   );
 }
@@ -234,7 +269,7 @@ const TURKISH_STROKES = [
 
 export function AppleHelloTurkishEffect({
   className,
-  contentFilter,
+  glass,
   speed = 1,
   onAnimationComplete,
   ...props
@@ -253,13 +288,13 @@ export function AppleHelloTurkishEffect({
       {...props}
     >
       <title>merhaba</title>
-      <g filter={contentFilter}>
+      <HelloContent glass={glass}>
         <HelloStrokes
           onAnimationComplete={onAnimationComplete}
           speed={speed}
           strokes={TURKISH_STROKES}
         />
-      </g>
+      </HelloContent>
     </motion.svg>
   );
 }
@@ -277,7 +312,7 @@ const FRENCH_STROKES = [
 
 export function AppleHelloFrenchEffect({
   className,
-  contentFilter,
+  glass,
   speed = 1,
   onAnimationComplete,
   ...props
@@ -295,13 +330,13 @@ export function AppleHelloFrenchEffect({
       {...props}
     >
       <title>bonjour</title>
-      <g filter={contentFilter}>
+      <HelloContent glass={glass}>
         <HelloStrokes
           onAnimationComplete={onAnimationComplete}
           speed={speed}
           strokes={FRENCH_STROKES}
         />
-      </g>
+      </HelloContent>
     </motion.svg>
   );
 }
@@ -316,7 +351,7 @@ const SPANISH_STROKES = [
 
 export function AppleHelloSpanishEffect({
   className,
-  contentFilter,
+  glass,
   speed = 1,
   onAnimationComplete,
   ...props
@@ -334,13 +369,13 @@ export function AppleHelloSpanishEffect({
       {...props}
     >
       <title>hola</title>
-      <g filter={contentFilter}>
+      <HelloContent glass={glass}>
         <HelloStrokes
           onAnimationComplete={onAnimationComplete}
           speed={speed}
           strokes={SPANISH_STROKES}
         />
-      </g>
+      </HelloContent>
     </motion.svg>
   );
 }
@@ -361,7 +396,7 @@ const RUSSIAN_STROKES = [
 
 export function AppleHelloRussianEffect({
   className,
-  contentFilter,
+  glass,
   speed = 1,
   onAnimationComplete,
   ...props
@@ -379,13 +414,13 @@ export function AppleHelloRussianEffect({
       {...props}
     >
       <title>привет</title>
-      <g filter={contentFilter}>
+      <HelloContent glass={glass}>
         <HelloStrokes
           onAnimationComplete={onAnimationComplete}
           speed={speed}
           strokes={RUSSIAN_STROKES}
         />
-      </g>
+      </HelloContent>
     </motion.svg>
   );
 }
@@ -407,7 +442,7 @@ const JAPANESE_STROKES = [
 
 export function AppleHelloJapaneseEffect({
   className,
-  contentFilter,
+  glass,
   speed = 1,
   onAnimationComplete,
   ...props
@@ -425,13 +460,13 @@ export function AppleHelloJapaneseEffect({
       {...props}
     >
       <title>こんにちは</title>
-      <g filter={contentFilter}>
+      <HelloContent glass={glass}>
         <HelloStrokes
           onAnimationComplete={onAnimationComplete}
           speed={speed}
           strokes={JAPANESE_STROKES}
         />
-      </g>
+      </HelloContent>
     </motion.svg>
   );
 }

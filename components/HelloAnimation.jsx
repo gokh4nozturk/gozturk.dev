@@ -11,7 +11,7 @@ import {
 } from "@components/apple-hello";
 import { cn } from "@lib/utils";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const HELLOS = [
   { Effect: AppleHelloEnglishEffect, key: "english" },
@@ -25,6 +25,12 @@ const HELLOS = [
 
 const NEXT_HELLO_DELAY = 800;
 const GLASS_FILTER_ID = "hello-liquid-glass";
+const GLASS_SHADOW_FILTER_ID = "hello-liquid-glass-shadow";
+const GLASS_MASK_ID = "hello-liquid-glass-reveal";
+
+// Room around the viewBox in the pre-rendered glass image, for strokes that
+// reach past its edges.
+const GLASS_IMAGE_MARGIN = 40;
 
 // Thicker than the default 14.9 so the glass "tube" has enough body to show
 // its refraction, rim and specular highlights.
@@ -69,6 +75,32 @@ const LIQUID_IMAGE = `data:image/svg+xml,${encodeURIComponent(
   ).join("")}</svg>`,
 )}`;
 
+// Shared by the full glass filter and the shadow-only one used while revealing.
+const glassFilterRegion = {
+  colorInterpolationFilters: "sRGB",
+  height: "1.5",
+  width: "1.12",
+  x: "-0.06",
+  y: "-0.15",
+};
+
+// Soft contact shadow and the light the glass focuses into it.
+function GlassShadowPrimitives() {
+  return (
+    <>
+      <feGaussianBlur in="SourceAlpha" result="shadowBlur" stdDeviation="9" />
+      <feOffset dy="12" in="shadowBlur" result="shadowOffset" />
+      <feFlood style={{ floodColor: "var(--glass-shadow)" }} />
+      <feComposite in2="shadowOffset" operator="in" result="shadow" />
+      <feGaussianBlur in="SourceAlpha" result="causticBlur" stdDeviation="3" />
+      <feOffset dy="9" in="causticBlur" result="causticOffset" />
+      <feComposite in="causticOffset" in2="SourceAlpha" operator="out" result="causticOut" />
+      <feFlood style={{ floodColor: "var(--glass-caustic)" }} />
+      <feComposite in2="causticOut" operator="in" result="caustic" />
+    </>
+  );
+}
+
 // Liquid Glass material built from the stroke's own alpha. It is applied to a
 // <g> inside each SVG (not as a CSS filter on an HTML box, which Safari renders
 // unreliably), so every value below is in viewBox units and scales with the SVG.
@@ -79,27 +111,11 @@ const LIQUID_IMAGE = `data:image/svg+xml,${encodeURIComponent(
 // refracted through the tube, refraction darkening toward the
 // edges, chromatic fringes, an inner rim reflection, a back light and a sharp
 // key specular whose direction follows the pointer.
-function LiquidGlassFilter({ backLightRef, keyLightRef, liquidRef }) {
+function LiquidGlassFilter({ backLightRef, filterRef, keyLightRef, liquidRef }) {
   return (
     <svg aria-hidden="true" className="absolute size-0" focusable="false">
-      <filter
-        colorInterpolationFilters="sRGB"
-        height="1.5"
-        id={GLASS_FILTER_ID}
-        width="1.12"
-        x="-0.06"
-        y="-0.15"
-      >
-        {/* Soft contact shadow and the light the glass focuses into it */}
-        <feGaussianBlur in="SourceAlpha" result="shadowBlur" stdDeviation="9" />
-        <feOffset dy="12" in="shadowBlur" result="shadowOffset" />
-        <feFlood style={{ floodColor: "var(--glass-shadow)" }} />
-        <feComposite in2="shadowOffset" operator="in" result="shadow" />
-        <feGaussianBlur in="SourceAlpha" result="causticBlur" stdDeviation="3" />
-        <feOffset dy="9" in="causticBlur" result="causticOffset" />
-        <feComposite in="causticOffset" in2="SourceAlpha" operator="out" result="causticOut" />
-        <feFlood style={{ floodColor: "var(--glass-caustic)" }} />
-        <feComposite in2="causticOut" operator="in" result="caustic" />
+      <filter id={GLASS_FILTER_ID} ref={filterRef} {...glassFilterRegion}>
+        <GlassShadowPrimitives />
 
         {/* Near-clear body */}
         <feFlood style={{ floodColor: "var(--glass-body)" }} />
@@ -211,6 +227,13 @@ function LiquidGlassFilter({ backLightRef, keyLightRef, liquidRef }) {
           <feMergeNode in="keyLightIn" />
         </feMerge>
       </filter>
+      <filter id={GLASS_SHADOW_FILTER_ID} {...glassFilterRegion}>
+        <GlassShadowPrimitives />
+        <feMerge>
+          <feMergeNode in="shadow" />
+          <feMergeNode in="caustic" />
+        </feMerge>
+      </filter>
     </svg>
   );
 }
@@ -245,19 +268,139 @@ function usePointerLight(boxRef, keyLightRef, backLightRef, liquidRef) {
   }, [boxRef, keyLightRef, backLightRef, liquidRef]);
 }
 
+// Pre-renders the finished word through the full glass filter (without its
+// shadow, which stays live) into a bitmap URL, cached per word until replaced. The full filter is too expensive to
+// re-run on every frame while the strokes draw (long words drop frames and the
+// pen stutters), so during drawing this image is revealed by a mask of the
+// animated strokes instead. Returns null where the canvas can't be exported.
+async function renderGlassImage(svg, filter) {
+  const box = svg.getBoundingClientRect();
+  const viewBox = svg.viewBox.baseVal;
+  if (!box.width || !viewBox.width) return null;
+
+  const margin = GLASS_IMAGE_MARGIN;
+  const x = viewBox.x - margin;
+  const y = viewBox.y - margin;
+  const width = viewBox.width + margin * 2;
+  const height = viewBox.height + margin * 2;
+  const scale =
+    Math.min(box.width / viewBox.width, box.height / viewBox.height) *
+    Math.min(window.devicePixelRatio || 1, 3);
+  const pixelWidth = Math.ceil(width * scale);
+  const pixelHeight = Math.ceil(height * scale);
+
+  // Bake the theme colors (CSS vars) and the current pointer-driven lights
+  // into a standalone copy of the filter; the shadow layers are left out.
+  const filterCopy = filter.cloneNode(true);
+  filterCopy.id = "glass";
+  const floods = filter.querySelectorAll("feFlood");
+  filterCopy.querySelectorAll("feFlood").forEach((flood, i) => {
+    flood.removeAttribute("style");
+    flood.setAttribute("flood-color", getComputedStyle(floods[i]).floodColor);
+  });
+  filterCopy
+    .querySelectorAll('feMergeNode[in="shadow"], feMergeNode[in="caustic"]')
+    .forEach((n) => {
+      n.remove();
+    });
+
+  const paths = [...svg.querySelectorAll("path")]
+    .filter((path) => !path.closest("mask"))
+    .map((path) => `<path d="${path.getAttribute("d")}"/>`)
+    .join("");
+  const markup = `<svg xmlns="http://www.w3.org/2000/svg" width="${pixelWidth}" height="${pixelHeight}" viewBox="${x} ${y} ${width} ${height}">${new XMLSerializer().serializeToString(filterCopy)}<g filter="url(#glass)" fill="none" stroke="#000" stroke-linecap="round" stroke-width="${svg.getAttribute("stroke-width")}">${paths}</g></svg>`;
+
+  const image = new Image();
+  image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`;
+  await image.decode();
+  const canvas = document.createElement("canvas");
+  canvas.width = pixelWidth;
+  canvas.height = pixelHeight;
+  canvas.getContext("2d").drawImage(image, 0, 0, pixelWidth, pixelHeight);
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve));
+  // toBlob throws (rejecting this promise) if the browser taints the canvas.
+  if (!blob) return null;
+
+  return {
+    filter: `url(#${GLASS_SHADOW_FILTER_ID})`,
+    height,
+    href: URL.createObjectURL(blob),
+    width,
+    x,
+    y,
+  };
+}
+
 export default function HelloAnimation() {
-  const [index, setIndex] = useState(0);
-  const { Effect, key } = HELLOS[index];
+  const [index, setIndex] = useState(null);
+  const [preparingIndex, setPreparingIndex] = useState(0);
+  const [drawnKey, setDrawnKey] = useState(null);
+  const drawnKeyRef = useRef(null);
+  const imagesRef = useRef(new Map());
   const boxRef = useRef(null);
   const keyLightRef = useRef(null);
   const backLightRef = useRef(null);
   const liquidRef = useRef(null);
+  const filterRef = useRef(null);
   usePointerLight(boxRef, keyLightRef, backLightRef, liquidRef);
+
+  const current = index === null ? null : HELLOS[index];
+  const preparing = preparingIndex === null ? null : HELLOS[preparingIndex];
+
+  // Each word is first mounted invisibly to pre-render its glass image, while
+  // nothing on screen moves (on load, or during the pause after the previous
+  // word), so the rasterization never stalls a drawing. Then it is shown.
+  const prepareRef = useCallback(
+    (svg) => {
+      if (!svg || preparingIndex === null) return;
+      let cancelled = false;
+      const startedAt = performance.now();
+      const { key } = HELLOS[preparingIndex];
+      const show = () => {
+        if (cancelled) return;
+        const wait = index === null ? 0 : NEXT_HELLO_DELAY - (performance.now() - startedAt);
+        setTimeout(
+          () => {
+            if (cancelled) return;
+            setPreparingIndex(null);
+            setIndex(preparingIndex);
+          },
+          Math.max(0, wait),
+        );
+      };
+      renderGlassImage(svg, filterRef.current)
+        .then((image) => {
+          const previous = imagesRef.current.get(key);
+          if (previous) URL.revokeObjectURL(previous.href);
+          if (image) imagesRef.current.set(key, image);
+          else imagesRef.current.delete(key);
+        })
+        .catch(() => imagesRef.current.delete(key))
+        .finally(show);
+      return () => {
+        cancelled = true;
+      };
+    },
+    [index, preparingIndex],
+  );
+
+  useEffect(() => {
+    const images = imagesRef.current;
+    return () => {
+      for (const image of images.values()) URL.revokeObjectURL(image.href);
+    };
+  }, []);
+
+  // While a word draws, show its pre-rendered glass image (see renderGlassImage);
+  // once drawn, switch back to the live filter so it reacts to the pointer.
+  const reveal =
+    current && drawnKey !== current.key ? (imagesRef.current.get(current.key) ?? null) : null;
 
   return (
     <div className={cn("flex items-start justify-center", glassThemeClass)}>
       <LiquidGlassFilter
         backLightRef={backLightRef}
+        filterRef={filterRef}
         keyLightRef={keyLightRef}
         liquidRef={liquidRef}
       />
@@ -268,27 +411,48 @@ export default function HelloAnimation() {
           max-w caps it on desktop; w-full keeps it responsive and overflow-free
           on narrow viewports. */}
       <div className="relative h-22 w-full max-w-104 sm:h-28" ref={boxRef}>
+        {preparing && (
+          <div aria-hidden="true" className="invisible absolute inset-0">
+            <preparing.Effect
+              className={helloEffectClass}
+              key={preparing.key}
+              ref={prepareRef}
+              strokeWidth={GLASS_STROKE_WIDTH}
+            />
+          </div>
+        )}
         {/* "wait" fades the previous hello out before the next one starts, so two
             translucent glass layers never overlap mid-swap. */}
         <AnimatePresence mode="wait">
-          <motion.div
-            animate={{ opacity: 1 }}
-            className="absolute inset-0"
-            exit={{ opacity: 0 }}
-            initial={{ opacity: 1 }}
-            key={key}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            <Effect
-              className={helloEffectClass}
-              contentFilter={`url(#${GLASS_FILTER_ID})`}
-              exit={undefined}
-              onAnimationComplete={() => {
-                setTimeout(() => setIndex((i) => (i + 1) % HELLOS.length), NEXT_HELLO_DELAY);
-              }}
-              strokeWidth={GLASS_STROKE_WIDTH}
-            />
-          </motion.div>
+          {current && (
+            <motion.div
+              animate={{ opacity: 1 }}
+              className="absolute inset-0"
+              exit={{ opacity: 0 }}
+              initial={{ opacity: 1 }}
+              key={current.key}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <current.Effect
+                className={helloEffectClass}
+                exit={undefined}
+                glass={{
+                  filter: `url(#${GLASS_FILTER_ID})`,
+                  maskId: GLASS_MASK_ID,
+                  maskStrokeWidth: GLASS_STROKE_WIDTH + 4,
+                  reveal,
+                }}
+                onAnimationComplete={() => {
+                  // Fires once per stroke copy (mask + visible), so only act once.
+                  if (drawnKeyRef.current === current.key) return;
+                  drawnKeyRef.current = current.key;
+                  setDrawnKey(current.key);
+                  setPreparingIndex((index + 1) % HELLOS.length);
+                }}
+                strokeWidth={GLASS_STROKE_WIDTH}
+              />
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </div>
