@@ -30,8 +30,19 @@ export function DarkModeToggle() {
   const indicatorX = minIndex * STEP_PX;
   const indicatorWidth = (maxIndex - minIndex) * STEP_PX + BUTTON_PX;
 
-  const applyTheme = (next) => {
+  const applyTheme = (next, origin) => {
     if (!next || next === theme) return;
+    if (origin) {
+      // Grow the reveal circle from the toggle until it covers the farthest viewport corner.
+      const { height, left, top, width } = origin.getBoundingClientRect();
+      const x = left + width / 2;
+      const y = top + height / 2;
+      const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+      const root = document.documentElement.style;
+      root.setProperty("--theme-x", `${x}px`);
+      root.setProperty("--theme-y", `${y}px`);
+      root.setProperty("--theme-r", `${r}px`);
+    }
     // The DOM must update synchronously inside the view transition callback, otherwise
     // Safari snapshots the old theme as the "new" state and the reveal animation breaks.
     const run = () => flushSync(() => setTheme(next));
@@ -58,7 +69,7 @@ export function DarkModeToggle() {
               className="peer sr-only"
               id={id}
               name={groupId}
-              onChange={() => applyTheme(t)}
+              onChange={(event) => applyTheme(t, event.currentTarget.nextElementSibling)}
               type="radio"
               value={t}
             />
