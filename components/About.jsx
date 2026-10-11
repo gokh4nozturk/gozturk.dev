@@ -29,7 +29,10 @@ export default function About() {
             <AnimatedLink href="https://eatnibble.app" name="eatnibble">
               eatnibble
             </AnimatedLink>
-            <span className="text-p3-text-light"> — TODO: one-line description</span>
+            <span className="text-p3-text-light">
+              {" "}
+              — iOS app that turns a meal photo into calories & macros
+            </span>
           </li>
           <li>
             <AnimatedLink href="https://linguolink.dev" name="Linguolink">
