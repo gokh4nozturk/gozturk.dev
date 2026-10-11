@@ -26,6 +26,12 @@ export default function About() {
         <p className="mb-2 text-p3-text-light">Latest works</p>
         <ul className="grid gap-1">
           <li>
+            <AnimatedLink href="https://eatnibble.app" name="Nibble">
+              Nibble
+            </AnimatedLink>
+            <span className="text-p3-text-light"> — TODO: one-line description</span>
+          </li>
+          <li>
             <AnimatedLink href="https://linguolink.dev" name="Linguolink">
               Linguolink
             </AnimatedLink>
