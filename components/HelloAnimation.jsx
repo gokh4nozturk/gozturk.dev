@@ -72,9 +72,9 @@ const LIQUID_IMAGE = `data:image/svg+xml,${encodeURIComponent(
 // Liquid Glass material built from the stroke's own alpha. It is applied to a
 // <g> inside each SVG (not as a CSS filter on an HTML box, which Safari renders
 // unreliably), so every value below is in viewBox units and scales with the SVG.
-// The filter region is in absolute viewBox units (covers the widest, 1050,
-// plus room for the flowing liquid to slide without exposing an edge) because
-// percentages would resolve against the hidden, zero-size host <svg>.
+// The filter region hugs each glyph's bounding box (plus room for the stroke,
+// shadow and caustic): every filter pixel is recomputed on each frame while the
+// strokes draw, so a loose region drops frames and makes the pen stutter.
 // Layers: contact shadow + light caustic, near-clear body, a colored "liquid"
 // refracted through the tube, refraction darkening toward the
 // edges, chromatic fringes, an inner rim reflection, a back light and a sharp
@@ -84,12 +84,11 @@ function LiquidGlassFilter({ backLightRef, keyLightRef, liquidRef }) {
     <svg aria-hidden="true" className="absolute size-0" focusable="false">
       <filter
         colorInterpolationFilters="sRGB"
-        filterUnits="userSpaceOnUse"
-        height="400"
+        height="1.5"
         id={GLASS_FILTER_ID}
-        width="1750"
-        x="-350"
-        y="-50"
+        width="1.12"
+        x="-0.06"
+        y="-0.15"
       >
         {/* Soft contact shadow and the light the glass focuses into it */}
         <feGaussianBlur in="SourceAlpha" result="shadowBlur" stdDeviation="9" />
@@ -164,13 +163,14 @@ function LiquidGlassFilter({ backLightRef, keyLightRef, liquidRef }) {
         <feFlood floodColor="rgb(255, 150, 210)" floodOpacity="0.4" />
         <feComposite in2="edgeBottomRightSoft" operator="in" result="fringeWarm" />
 
-        {/* Thin inner rim reflection running all along the outline */}
-        <feMorphology in="SourceAlpha" operator="erode" radius="2.5" result="rimOuter" />
-        <feMorphology in="SourceAlpha" operator="erode" radius="4" result="rimInner" />
-        <feComposite in="rimOuter" in2="rimInner" operator="out" result="rimBand" />
-        <feGaussianBlur in="rimBand" result="rimSoft" stdDeviation="0.5" />
+        {/* Thin inner rim reflection running all along the outline: a narrow band
+            of the blurred height map, picked out with a lookup table (much
+            cheaper per frame than eroding the alpha with feMorphology) */}
+        <feComponentTransfer in="height" result="rimBand">
+          <feFuncA tableValues="0 0 0 0 0 0 0.35 1 0.35 0 0" type="table" />
+        </feComponentTransfer>
         <feFlood style={{ floodColor: "var(--glass-rim)" }} />
-        <feComposite in2="rimSoft" operator="in" result="rim" />
+        <feComposite in2="rimBand" operator="in" result="rim" />
 
         {/* Back light catching the edge opposite the key light */}
         <feSpecularLighting
