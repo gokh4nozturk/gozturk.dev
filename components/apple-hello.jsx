@@ -78,41 +78,6 @@ function strokeTransition({ delay, duration }, speed) {
   };
 }
 
-// Renders the strokes for an optional glass material (see HelloAnimation):
-// - live: the strokes drawn through `glass.filter`;
-// - reveal: a pre-rendered image of the finished word, uncovered by a mask made
-//   of the animated strokes, over the strokes drawn through the cheap
-//   `glass.reveal.filter` (its shadow). Nothing expensive re-runs per frame.
-// The strokes stay mounted at the same place in both modes, so switching never
-// restarts their animation. They are rendered twice (mask + visible copy), so
-// onAnimationComplete fires twice per word.
-function HelloContent({ children, glass }) {
-  if (!glass) return children;
-  const { maskId, reveal } = glass;
-
-  return (
-    <>
-      <mask id={maskId}>
-        <g className="[&_path]:stroke-white" strokeWidth={glass.maskStrokeWidth}>
-          {children}
-        </g>
-      </mask>
-      <g filter={reveal ? reveal.filter : glass.filter}>{children}</g>
-      {reveal && (
-        <image
-          height={reveal.height}
-          href={reveal.href}
-          mask={`url(#${maskId})`}
-          preserveAspectRatio="none"
-          width={reveal.width}
-          x={reveal.x}
-          y={reveal.y}
-        />
-      )}
-    </>
-  );
-}
-
 function HelloStrokes({ strokes, speed, onAnimationComplete }) {
   const timeline = useMemo(() => easeTimeline(strokeTimeline(strokes)), [strokes]);
 
@@ -168,7 +133,6 @@ const VIETNAMESE_STROKES = [
 
 export function AppleHelloVietnameseEffect({
   className,
-  glass,
   speed = 1,
   onAnimationComplete,
   ...props
@@ -187,24 +151,23 @@ export function AppleHelloVietnameseEffect({
       {...props}
     >
       <title>xin chào</title>
-      <HelloContent glass={glass}>
-        <HelloStrokes
-          onAnimationComplete={onAnimationComplete}
-          speed={speed}
-          strokes={VIETNAMESE_STROKES}
-        />
-      </HelloContent>
+      <HelloStrokes
+        onAnimationComplete={onAnimationComplete}
+        speed={speed}
+        strokes={VIETNAMESE_STROKES}
+      />
     </motion.svg>
   );
 }
 
-export function AppleHelloEnglishEffect({
-  className,
-  glass,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+const ENGLISH_STROKES = [
+  // h1
+  "M8.69214 166.553C36.2393 151.239 61.3409 131.548 89.8191 98.0295C109.203 75.1488 119.625 49.0228 120.122 31.0026C120.37 17.6036 113.836 7.43883 101.759 7.43883C88.3598 7.43883 79.9231 17.6036 74.7122 40.9363C69.005 66.5793 64.7866 96.0036 54.1166 190.356",
+  // h2, ello
+  "M55.1624 181.135C60.6251 133.114 81.4118 98.0479 107.963 98.0479C123.844 98.0479 133.937 110.703 131.071 128.817C129.457 139.487 127.587 150.405 125.408 163.06C122.869 178.941 130.128 191.348 152.122 191.348C184.197 191.348 219.189 173.523 237.097 145.915C243.198 136.509 245.68 128.073 245.928 119.884C246.176 104.996 237.739 93.8296 222.851 93.8296C203.992 93.8296 189.6 115.17 189.6 142.465C189.6 171.745 205.481 192.341 239.208 192.341C285.066 192.341 335.86 137.292 359.199 75.8585C365.788 58.513 368.26 42.4065 368.26 31.1512C368.26 17.8057 364.042 7.55823 352.131 7.55823C340.469 7.55823 332.777 16.6141 325.829 30.9129C317.688 47.4967 311.667 71.4162 309.203 98.4549C303 166.301 316.896 191.348 349.936 191.348C390 191.348 434.542 135.534 457.286 75.6686C463.803 58.513 466.275 42.4065 466.275 31.1512C466.275 17.8057 462.057 7.55823 450.146 7.55823C438.484 7.55823 430.792 16.6141 423.844 30.9129C415.703 47.4967 409.682 71.4162 407.218 98.4549C401.015 166.301 414.911 191.348 444.416 191.348C473.874 191.348 489.877 165.67 499.471 138.402C508.955 111.447 520.618 94.8221 544.935 94.8221C565.035 94.8221 580.916 109.71 580.916 137.75C580.916 168.768 560.792 192.093 535.362 192.341C512.984 192.589 498.285 174.475 499.774 147.179C501.511 116.907 519.873 94.8221 543.943 94.8221C557.839 94.8221 569.51 100.999 578.682 107.725C603.549 125.866 622.709 114.656 630.047 96.7186",
+];
+
+export function AppleHelloEnglishEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   const calc = (x) => x * speed;
 
   return (
@@ -221,35 +184,34 @@ export function AppleHelloEnglishEffect({
       {...props}
     >
       <title>hello</title>
-      <HelloContent glass={glass}>
-        {/* h1 */}
-        <motion.path
-          animate={{ opacity: 1, pathLength: 1 }}
-          d="M8.69214 166.553C36.2393 151.239 61.3409 131.548 89.8191 98.0295C109.203 75.1488 119.625 49.0228 120.122 31.0026C120.37 17.6036 113.836 7.43883 101.759 7.43883C88.3598 7.43883 79.9231 17.6036 74.7122 40.9363C69.005 66.5793 64.7866 96.0036 54.1166 190.356"
-          initial={{ opacity: 0, pathLength: 0 }}
-          style={{ strokeLinecap: "round" }}
-          transition={{
-            duration: calc(0.8),
-            ease: "easeInOut",
-            opacity: { duration: 0.4 },
-          }}
-        />
 
-        {/* h2, ello */}
-        <motion.path
-          animate={{ opacity: 1, pathLength: 1 }}
-          d="M55.1624 181.135C60.6251 133.114 81.4118 98.0479 107.963 98.0479C123.844 98.0479 133.937 110.703 131.071 128.817C129.457 139.487 127.587 150.405 125.408 163.06C122.869 178.941 130.128 191.348 152.122 191.348C184.197 191.348 219.189 173.523 237.097 145.915C243.198 136.509 245.68 128.073 245.928 119.884C246.176 104.996 237.739 93.8296 222.851 93.8296C203.992 93.8296 189.6 115.17 189.6 142.465C189.6 171.745 205.481 192.341 239.208 192.341C285.066 192.341 335.86 137.292 359.199 75.8585C365.788 58.513 368.26 42.4065 368.26 31.1512C368.26 17.8057 364.042 7.55823 352.131 7.55823C340.469 7.55823 332.777 16.6141 325.829 30.9129C317.688 47.4967 311.667 71.4162 309.203 98.4549C303 166.301 316.896 191.348 349.936 191.348C390 191.348 434.542 135.534 457.286 75.6686C463.803 58.513 466.275 42.4065 466.275 31.1512C466.275 17.8057 462.057 7.55823 450.146 7.55823C438.484 7.55823 430.792 16.6141 423.844 30.9129C415.703 47.4967 409.682 71.4162 407.218 98.4549C401.015 166.301 414.911 191.348 444.416 191.348C473.874 191.348 489.877 165.67 499.471 138.402C508.955 111.447 520.618 94.8221 544.935 94.8221C565.035 94.8221 580.916 109.71 580.916 137.75C580.916 168.768 560.792 192.093 535.362 192.341C512.984 192.589 498.285 174.475 499.774 147.179C501.511 116.907 519.873 94.8221 543.943 94.8221C557.839 94.8221 569.51 100.999 578.682 107.725C603.549 125.866 622.709 114.656 630.047 96.7186"
-          initial={{ opacity: 0, pathLength: 0 }}
-          onAnimationComplete={onAnimationComplete}
-          style={{ strokeLinecap: "round" }}
-          transition={{
-            delay: calc(0.7),
-            duration: calc(2.8),
-            ease: "easeInOut",
-            opacity: { delay: calc(0.7), duration: 0.7 },
-          }}
-        />
-      </HelloContent>
+      {/* h1 */}
+      <motion.path
+        animate={{ opacity: 1, pathLength: 1 }}
+        d={ENGLISH_STROKES[0]}
+        initial={{ opacity: 0, pathLength: 0 }}
+        style={{ strokeLinecap: "round" }}
+        transition={{
+          duration: calc(0.8),
+          ease: "easeInOut",
+          opacity: { duration: 0.4 },
+        }}
+      />
+
+      {/* h2, ello */}
+      <motion.path
+        animate={{ opacity: 1, pathLength: 1 }}
+        d={ENGLISH_STROKES[1]}
+        initial={{ opacity: 0, pathLength: 0 }}
+        onAnimationComplete={onAnimationComplete}
+        style={{ strokeLinecap: "round" }}
+        transition={{
+          delay: calc(0.7),
+          duration: calc(2.8),
+          ease: "easeInOut",
+          opacity: { delay: calc(0.7), duration: 0.7 },
+        }}
+      />
     </motion.svg>
   );
 }
@@ -267,13 +229,7 @@ const TURKISH_STROKES = [
   "M993.697 99.1614C992.673 105.664 991.648 112.166 990.623 118.669C986.142 147.109 984.074 158.329 984.296 165.663C984.815 182.784 990.972 194.447 1006.36 194.447C1025.71 194.447 1036.57 181.295 1041.78 166.903",
 ];
 
-export function AppleHelloTurkishEffect({
-  className,
-  glass,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloTurkishEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -288,13 +244,11 @@ export function AppleHelloTurkishEffect({
       {...props}
     >
       <title>merhaba</title>
-      <HelloContent glass={glass}>
-        <HelloStrokes
-          onAnimationComplete={onAnimationComplete}
-          speed={speed}
-          strokes={TURKISH_STROKES}
-        />
-      </HelloContent>
+      <HelloStrokes
+        onAnimationComplete={onAnimationComplete}
+        speed={speed}
+        strokes={TURKISH_STROKES}
+      />
     </motion.svg>
   );
 }
@@ -310,13 +264,7 @@ const FRENCH_STROKES = [
   "M843.067 104.362C873.837 105.851 887.459 112.065 887.459 126.705C887.459 136.878 882.497 152.511 881.008 163.926C878.278 183.777 885.601 194.695 901.355 194.695C920.512 194.695 933.769 181.968 938.941 169.037",
 ];
 
-export function AppleHelloFrenchEffect({
-  className,
-  glass,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloFrenchEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -330,13 +278,11 @@ export function AppleHelloFrenchEffect({
       {...props}
     >
       <title>bonjour</title>
-      <HelloContent glass={glass}>
-        <HelloStrokes
-          onAnimationComplete={onAnimationComplete}
-          speed={speed}
-          strokes={FRENCH_STROKES}
-        />
-      </HelloContent>
+      <HelloStrokes
+        onAnimationComplete={onAnimationComplete}
+        speed={speed}
+        strokes={FRENCH_STROKES}
+      />
     </motion.svg>
   );
 }
@@ -349,13 +295,7 @@ const SPANISH_STROKES = [
   "M505.875 96.0965C504.851 102.599 503.826 109.101 502.802 115.604C498.32 144.044 496.253 155.264 496.475 162.598C496.993 179.719 503.15 191.382 518.535 191.382C537.89 191.382 548.745 178.23 553.956 163.838",
 ];
 
-export function AppleHelloSpanishEffect({
-  className,
-  glass,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloSpanishEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -369,13 +309,11 @@ export function AppleHelloSpanishEffect({
       {...props}
     >
       <title>hola</title>
-      <HelloContent glass={glass}>
-        <HelloStrokes
-          onAnimationComplete={onAnimationComplete}
-          speed={speed}
-          strokes={SPANISH_STROKES}
-        />
-      </HelloContent>
+      <HelloStrokes
+        onAnimationComplete={onAnimationComplete}
+        speed={speed}
+        strokes={SPANISH_STROKES}
+      />
     </motion.svg>
   );
 }
@@ -394,13 +332,7 @@ const RUSSIAN_STROKES = [
   "M796.829 166.999C803.792 123.793 820.506 97.1763 844.804 97.1763C861.479 97.1763 869.816 111.072 867.911 127.946C866.72 139.856 862.67 154 861.955 165.663C860.764 182.784 869.234 194.447 883.156 194.447C900.672 194.447 911.432 182.05 916.344 168.483",
 ];
 
-export function AppleHelloRussianEffect({
-  className,
-  glass,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloRussianEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -414,13 +346,11 @@ export function AppleHelloRussianEffect({
       {...props}
     >
       <title>привет</title>
-      <HelloContent glass={glass}>
-        <HelloStrokes
-          onAnimationComplete={onAnimationComplete}
-          speed={speed}
-          strokes={RUSSIAN_STROKES}
-        />
-      </HelloContent>
+      <HelloStrokes
+        onAnimationComplete={onAnimationComplete}
+        speed={speed}
+        strokes={RUSSIAN_STROKES}
+      />
     </motion.svg>
   );
 }
@@ -440,13 +370,7 @@ const JAPANESE_STROKES = [
   "M821.742 15.7711C824.666 41.779 825.669 73.7762 824.709 109.577C823.413 157.862 805.904 179.993 780.67 180.47C764.063 180.784 755.316 171.11 755.48 159.378C755.663 146.303 766.998 136.203 787.725 136.157C811.678 136.104 832.846 148.877 862.631 176.867",
 ];
 
-export function AppleHelloJapaneseEffect({
-  className,
-  glass,
-  speed = 1,
-  onAnimationComplete,
-  ...props
-}) {
+export function AppleHelloJapaneseEffect({ className, speed = 1, onAnimationComplete, ...props }) {
   return (
     <motion.svg
       className={cn("h-20", className)}
@@ -460,13 +384,48 @@ export function AppleHelloJapaneseEffect({
       {...props}
     >
       <title>こんにちは</title>
-      <HelloContent glass={glass}>
-        <HelloStrokes
-          onAnimationComplete={onAnimationComplete}
-          speed={speed}
-          strokes={JAPANESE_STROKES}
-        />
-      </HelloContent>
+      <HelloStrokes
+        onAnimationComplete={onAnimationComplete}
+        speed={speed}
+        strokes={JAPANESE_STROKES}
+      />
     </motion.svg>
   );
+}
+
+// Geometry and timing of every hello, for renderers that draw the strokes
+// themselves (e.g. the WebGL glass in HelloAnimation). Mirrors the components
+// above: same order of words, viewBoxes and stroke timings (in seconds).
+// Every viewBox is 279 units tall and shares the same baseline.
+export const HELLO_VIEWBOX_HEIGHT = 279;
+
+function timedStrokes(strokes) {
+  const timeline = easeTimeline(strokeTimeline(strokes));
+  return strokes.map((stroke, i) => ({
+    d: typeof stroke === "string" ? stroke : stroke.d,
+    ...timeline[i],
+    ease: "linear",
+  }));
+}
+
+export const HELLO_WORDS = [
+  {
+    key: "english",
+    strokes: [
+      { d: ENGLISH_STROKES[0], delay: 0, duration: 0.8, ease: "easeInOut" },
+      { d: ENGLISH_STROKES[1], delay: 0.7, duration: 2.8, ease: "easeInOut" },
+    ],
+    title: "hello",
+    width: 638,
+  },
+  { key: "turkish", strokes: timedStrokes(TURKISH_STROKES), title: "merhaba", width: 1050 },
+  { key: "french", strokes: timedStrokes(FRENCH_STROKES), title: "bonjour", width: 947 },
+  { key: "spanish", strokes: timedStrokes(SPANISH_STROKES), title: "hola", width: 562 },
+  { key: "vietnamese", strokes: timedStrokes(VIETNAMESE_STROKES), title: "xin chào", width: 1009 },
+  { key: "russian", strokes: timedStrokes(RUSSIAN_STROKES), title: "привет", width: 924 },
+  { key: "japanese", strokes: timedStrokes(JAPANESE_STROKES), title: "こんにちは", width: 878 },
+];
+
+export function strokeLength(d) {
+  return measureStroke(d).length;
 }
