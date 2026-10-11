@@ -54,6 +54,20 @@ function strokeTimeline(strokes) {
   });
 }
 
+// Remaps the constant-speed timeline through one ease-in-out curve over the
+// whole word, so the pen starts gently, flows faster through the middle and
+// settles at the end instead of moving at a mechanical constant speed. Strokes
+// keep their order and never overlap; the total duration is unchanged.
+function easeTimeline(timeline) {
+  const total = timeline.at(-1).delay + timeline.at(-1).duration;
+  const ease = (t) => total * (0.5 - 0.5 * Math.cos((Math.PI * t) / total));
+
+  return timeline.map(({ delay, duration }) => {
+    const start = ease(delay);
+    return { delay: start, duration: ease(delay + duration) - start };
+  });
+}
+
 function strokeTransition({ delay, duration }, speed) {
   return {
     delay: delay * speed,
@@ -65,7 +79,7 @@ function strokeTransition({ delay, duration }, speed) {
 }
 
 function HelloStrokes({ strokes, speed, onAnimationComplete }) {
-  const timeline = useMemo(() => strokeTimeline(strokes), [strokes]);
+  const timeline = useMemo(() => easeTimeline(strokeTimeline(strokes)), [strokes]);
 
   return (
     <>
