@@ -13,6 +13,7 @@ import { useMemo } from "react";
 const PEN_SPEED = 700; // viewBox units per second, close to the English pace
 const PEN_LIFT_PAUSE = 0.12; // seconds
 const PEN_LIFT_DISTANCE = 2; // viewBox units
+const PEN_EASE = 0.2; // 0 = constant speed, 1 = full ease-in-out over the word
 
 // The stroke paths only use absolute "M x y" followed by cubic "C" segments.
 function measureStroke(d) {
@@ -58,14 +59,13 @@ function strokeTimeline(strokes) {
 // word: it settles into the first and last strokes and flows a little faster
 // through the middle. A stroke that starts a fraction s of the way through the
 // writing starts at the time where an ease-in-out curve reaches s (its inverse),
-// blended half-and-half with linear time so the ends slow down without
-// crawling. Strokes keep their order and never overlap; the total duration is
+// blended with linear time by PEN_EASE so the ends only slow down slightly. Strokes keep their order and never overlap; the total duration is
 // unchanged.
 function easeTimeline(timeline) {
   const total = timeline.at(-1).delay + timeline.at(-1).duration;
   const time = (t) => {
     const s = Math.min(1, Math.max(0, t / total));
-    return total * (0.5 * s + (0.5 * Math.acos(1 - 2 * s)) / Math.PI);
+    return total * ((1 - PEN_EASE) * s + (PEN_EASE * Math.acos(1 - 2 * s)) / Math.PI);
   };
 
   return timeline.map(({ delay, duration }) => {
