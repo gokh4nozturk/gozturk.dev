@@ -49,7 +49,7 @@ export default function About() {
             </AnimatedLink>
             <span className="text-p3-text-light"> — my own shadcn component registry</span>
           </li>
-          <li>
+          {/* <li>
             <AnimatedLink href="https://gokh4nozturk.github.io/orbit-absorb/" name="orbit-absorb">
               orbit-absorb
             </AnimatedLink>
@@ -57,7 +57,7 @@ export default function About() {
               {" "}
               — dependency-free orbiting-icons web component
             </span>
-          </li>
+          </li> */}
           <li>
             <AnimatedLink href="https://gauge.gozturk.dev" name="gauge">
               gauge
