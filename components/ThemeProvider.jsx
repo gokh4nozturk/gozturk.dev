@@ -2,6 +2,7 @@
 
 import { cn } from "@lib/utils";
 import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
+import { animate, motion, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes";
 import * as React from "react";
 import { flushSync } from "react-dom";
@@ -16,6 +17,11 @@ const BUTTON_PX = 24;
 const GAP_PX = 4;
 const STEP_PX = BUTTON_PX + GAP_PX;
 
+// The expanding edge leads with a snappy spring while the contracting edge trails softly,
+// which gives the indicator its liquid stretch-and-settle feel.
+const LEAD_SPRING = { damping: 32, stiffness: 520, type: "spring" };
+const TRAIL_SPRING = { damping: 26, stiffness: 240, type: "spring" };
+
 export function DarkModeToggle() {
   const { setTheme, theme, themes } = useTheme();
   const groupId = React.useId();
@@ -27,8 +33,40 @@ export function DarkModeToggle() {
   const targetIndex = hoveredIndex ?? activeIndex;
   const minIndex = Math.min(activeIndex, targetIndex);
   const maxIndex = Math.max(activeIndex, targetIndex);
-  const indicatorX = minIndex * STEP_PX;
-  const indicatorWidth = (maxIndex - minIndex) * STEP_PX + BUTTON_PX;
+  const targetLeft = minIndex * STEP_PX;
+  const targetRight = maxIndex * STEP_PX + BUTTON_PX;
+
+  const reduceMotion = useReducedMotion();
+  const isReady = theme !== undefined;
+  const hasPositioned = React.useRef(false);
+  const left = useMotionValue(targetLeft);
+  const right = useMotionValue(targetRight);
+  const width = useTransform(() => right.get() - left.get());
+
+  React.useEffect(() => {
+    if (!isReady) return;
+    // Snap into place on first render after hydration instead of sliding from index 0.
+    if (!hasPositioned.current || reduceMotion) {
+      hasPositioned.current = true;
+      left.jump(targetLeft);
+      right.jump(targetRight);
+      return;
+    }
+    const leftControls = animate(
+      left,
+      targetLeft,
+      targetLeft < left.get() ? LEAD_SPRING : TRAIL_SPRING,
+    );
+    const rightControls = animate(
+      right,
+      targetRight,
+      targetRight > right.get() ? LEAD_SPRING : TRAIL_SPRING,
+    );
+    return () => {
+      leftControls.stop();
+      rightControls.stop();
+    };
+  }, [isReady, left, reduceMotion, right, targetLeft, targetRight]);
 
   const applyTheme = (next) => {
     if (!next || next === theme) return;
@@ -79,16 +117,18 @@ export function DarkModeToggle() {
           </React.Fragment>
         );
       })}
-      <span
+      <motion.span
         aria-hidden="true"
         className={cn(
-          "absolute top-1 left-1 z-0 h-6 rounded-sm bg-p3-primary/20 ring-1 ring-p3-primary/40 dark:bg-p3-primary/30 dark:ring-p3-primary/50",
-          "motion-safe:transition-all motion-safe:duration-300 motion-safe:ease-out",
+          "pointer-events-none absolute top-1 left-1 z-0 h-6 overflow-hidden rounded-sm",
+          "border border-white/50 bg-gradient-to-b from-white/40 to-white/10 backdrop-blur-md backdrop-saturate-150",
+          "shadow-[inset_0_1px_0_rgb(255_255_255/0.7),inset_0_-1px_2px_rgb(0_0_0/0.06),0_2px_6px_rgb(0_0_0/0.12)]",
+          "dark:border-white/15 dark:from-white/20 dark:to-white/5",
+          "dark:shadow-[inset_0_1px_0_rgb(255_255_255/0.25),inset_0_-1px_2px_rgb(0_0_0/0.3),0_2px_8px_rgb(0_0_0/0.4)]",
+          "transition-opacity duration-200",
+          isReady ? "opacity-100" : "opacity-0",
         )}
-        style={{
-          transform: `translateX(${indicatorX}px)`,
-          width: `${indicatorWidth}px`,
-        }}
+        style={{ width, x: left }}
       />
     </fieldset>
   );
