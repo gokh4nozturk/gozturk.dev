@@ -23,7 +23,7 @@ export default function About() {
         maintainer, and automator of anything that I can.
       </p>
       <div className="mt-6">
-        <p className="mb-2 text-p3-text-light">Selected work</p>
+        <p className="mb-2 text-p3-text-light">Latest works</p>
         <ul className="grid gap-1">
           <li>
             <AnimatedLink href="https://linguolink.dev" name="Linguolink">
