@@ -1,4 +1,3 @@
-import AnimatedLink from "@components/AnimatedLink";
 import { projects } from "@lib/resume-data";
 import { slugId } from "@lib/utils";
 import { Folder } from "lucide-react";
@@ -24,20 +23,7 @@ function ProjectItem({ project, isFirst }) {
       </a>
       <ul className="list-disc pl-4 text-gray-600 dark:text-gray-300">
         {project.achievements.map((achievement, index) => (
-          <li key={`${project.title}-achievement-${index}`}>
-            {achievement ===
-            "Rocket UI is actively used across all Rockads projects to ensure consistent UI and improve development efficiency" ? (
-              <strong>
-                Rocket UI is actively used across all{" "}
-                <AnimatedLink color="rockads" href={project.rockadsLink} name="Rockads">
-                  Rockads
-                </AnimatedLink>{" "}
-                projects to ensure consistent UI and improve development efficiency
-              </strong>
-            ) : (
-              achievement
-            )}
-          </li>
+          <li key={`${project.title}-achievement-${index}`}>{achievement}</li>
         ))}
         <li>
           <strong>Tech stack:</strong> {project.techStack}

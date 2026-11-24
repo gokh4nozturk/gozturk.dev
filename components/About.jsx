@@ -4,21 +4,7 @@ import Link from "next/link";
 export default function About() {
   return (
     <div className="text-sm sm:text-base">
-      <p>
-        Hi 👋 my name is Gökhan, a product engineer at{" "}
-        <AnimatedLink color="rockads" href="https://rockads.com/?ref=gozturk.dev" name="Rockads">
-          Rockads
-        </AnimatedLink>
-        , part of{" "}
-        <AnimatedLink
-          color="teknasyon"
-          href="https://teknasyon.com/en/?ref=gozturk.dev"
-          name="Teknasyon"
-        >
-          Teknasyon
-        </AnimatedLink>
-        .
-      </p>
+      <p>Hi 👋 my name is Gökhan, a software engineer.</p>
       <p>
         I am an enthusiast for well-designed products, free & open source software contributor &
         maintainer, and automator of anything that I can.
