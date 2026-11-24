@@ -1,6 +1,4 @@
 import Arc from "./arc";
-// import Rockads from './rockads';
-// import Teknasyon from './teknasyon';
 import AWS from "./aws";
 import Biomejs from "./biome";
 import Bluesky from "./bluesky";
