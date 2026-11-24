@@ -1,4 +1,5 @@
 import AnimatedLink from "@components/AnimatedLink";
+import Link from "next/link";
 
 export default function About() {
   return (
@@ -31,7 +32,13 @@ export default function About() {
             </AnimatedLink>
             <span className="text-p3-text-light">
               {" "}
-              — iOS app that turns a meal photo into calories & macros
+              — iOS app that turns a meal photo into calories & macros ·{" "}
+              <Link
+                className="whitespace-nowrap underline-offset-4 hover:text-p3-text hover:underline dark:hover:text-p3-text-dark"
+                href="/apps"
+              >
+                all apps →
+              </Link>
             </span>
           </li>
           <li>

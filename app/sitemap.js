@@ -13,6 +13,12 @@ export default function sitemap() {
       url: "https://gozturk.dev/photos",
     },
     {
+      changeFrequency: "monthly",
+      lastModified: new Date(),
+      priority: 0.8,
+      url: "https://gozturk.dev/apps",
+    },
+    {
       changeFrequency: "daily",
       lastModified: new Date(),
       priority: 0.7,
