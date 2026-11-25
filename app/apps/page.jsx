@@ -72,9 +72,7 @@ function AppEntry({ app }) {
 
       <p className="mt-4 text-sm sm:text-base">{app.summary}</p>
 
-      <h3 className="mt-5 mb-2 text-p3-text-light text-xs uppercase tracking-wide">
-        Under the hood
-      </h3>
+      <h3 className="eyebrow mt-5 mb-2 text-p3-text-light">Under the hood</h3>
       <ul className="grid list-disc gap-1.5 pl-5 text-sm marker:text-p3-text-light">
         {app.highlights.map((item) => (
           <li key={item}>{item}</li>
@@ -84,7 +82,7 @@ function AppEntry({ app }) {
       <ul className="mt-5 flex flex-wrap gap-1.5">
         {app.stack.map((tech) => (
           <li
-            className="rounded-full border border-p3-border px-2.5 py-0.5 text-xs dark:border-p3-border-dark"
+            className="meta rounded-full border border-p3-border px-2.5 py-0.5 dark:border-p3-border-dark"
             key={tech}
           >
             {tech}

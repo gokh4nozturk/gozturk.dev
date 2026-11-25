@@ -38,7 +38,7 @@ function NowItem({ icon: Icon, label, title, href, date, photo }) {
       ) : (
         link
       )}
-      <span className="ml-auto shrink-0 whitespace-nowrap opacity-50">{date}</span>
+      <span className="meta ml-auto shrink-0 whitespace-nowrap text-p3-text-light">{date}</span>
     </li>
   );
 }
@@ -103,7 +103,7 @@ export default async function Now() {
 
   return (
     <section className="w-full">
-      <h2 className="mb-4 flex items-center gap-2 font-medium text-p3-text-light text-xs uppercase tracking-wide">
+      <h2 className="eyebrow mb-4 flex items-center gap-2 text-p3-text-light">
         <span className="relative flex size-2">
           <span className="absolute top-1/2 left-1/2 inline-flex size-2 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-p3-primary opacity-75" />
           <span className="relative inline-flex size-2 rounded-full bg-p3-primary" />

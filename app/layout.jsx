@@ -1,4 +1,5 @@
 import { cn } from "@lib/utils";
+import { Geist, Geist_Mono } from "next/font/google";
 import "@styles/globals.css";
 import Navigation from "@components/Navigation";
 import { Sidebar } from "@components/Sidebar";
@@ -100,6 +101,18 @@ export const metadata = {
   },
 };
 
+// Self-hosted variable fonts; exposed as CSS variables for --font-sans/--font-mono.
+const geistSans = Geist({
+  display: "swap",
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-geist-sans",
+});
+const geistMono = Geist_Mono({
+  display: "swap",
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-geist-mono",
+});
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -126,7 +139,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html className={cn(geistSans.variable, geistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD requires raw injection
@@ -136,7 +149,7 @@ export default function RootLayout({ children }) {
       </head>
       <body
         className={cn(
-          "mx-auto min-h-dvh max-w-6xl bg-p3-background-light px-4 font-sans text-p3-text tracking-tight",
+          "mx-auto min-h-dvh max-w-6xl bg-p3-background-light px-4 font-sans text-p3-text antialiased",
           "selection:bg-p3-primary-light selection:text-p3-text sm:px-10",
           "dark:bg-p3-background dark:text-p3-text-dark dark:selection:bg-p3-accent-dark dark:selection:text-p3-text-dark",
         )}

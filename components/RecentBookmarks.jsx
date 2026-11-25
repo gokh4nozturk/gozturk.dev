@@ -23,7 +23,7 @@ export default async function RecentBookmarks() {
               {bookmark.title}
               <span className="text-p3-text-light"> · {bookmark.domain}</span>
             </a>
-            <span className="ml-auto shrink-0 whitespace-nowrap text-p3-text-light text-xs">
+            <span className="meta ml-auto shrink-0 whitespace-nowrap text-p3-text-light">
               {timeAgo(bookmark.created)}
             </span>
           </li>

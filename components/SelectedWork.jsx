@@ -17,7 +17,7 @@ const iconClass =
 export default function SelectedWork() {
   return (
     <Section more={{ href: "/apps", label: "all apps", morph: "apps-title" }} title="Latest works">
-      <ul className="grid gap-1">
+      <ul className="grid grid-cols-1 gap-1">
         {apps.map((app) => (
           <li key={app.slug}>
             <Link className={rowClass} href={`/apps#${app.slug}`} transitionTypes={["nav-forward"]}>
@@ -47,7 +47,7 @@ function WorkText({ name, kind, description }) {
     <span className="min-w-0">
       <span className="flex items-baseline gap-2">
         <span className="font-medium">{name}</span>
-        <span className="text-p3-text-light text-xs">{kind}</span>
+        <span className="meta text-p3-text-light">{kind}</span>
       </span>
       <span className="block truncate text-p3-text-light text-sm">{description}</span>
     </span>

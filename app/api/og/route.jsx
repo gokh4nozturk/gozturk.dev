@@ -29,7 +29,7 @@ export async function GET() {
           display: "flex",
           flexDirection: "column",
           fontFamily:
-            'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif',
+            'Geist, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif',
           height: "100%",
           justifyContent: "flex-end",
           MozOsxFontSmoothing: "grayscale",
@@ -117,23 +117,23 @@ export async function GET() {
         emoji: "fluent",
         fonts: [
           {
-            data: await loadGoogleFont("Inter", text, "400"),
-            name: "Inter",
+            data: await loadGoogleFont("Geist", text, "400"),
+            name: "Geist",
             weight: 400,
           },
           {
-            data: await loadGoogleFont("Inter", text, "500"),
-            name: "Inter",
+            data: await loadGoogleFont("Geist", text, "500"),
+            name: "Geist",
             weight: 500,
           },
           {
-            data: await loadGoogleFont("Inter", text, "600"),
-            name: "Inter",
+            data: await loadGoogleFont("Geist", text, "600"),
+            name: "Geist",
             weight: 600,
           },
           {
-            data: await loadGoogleFont("Inter", text, "700"),
-            name: "Inter",
+            data: await loadGoogleFont("Geist", text, "700"),
+            name: "Geist",
             weight: 700,
           },
         ],

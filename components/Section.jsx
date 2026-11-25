@@ -8,14 +8,14 @@ export default function Section({ title, icon, more, children, className }) {
   return (
     <section className={cn("w-full", className)}>
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 className="flex items-center gap-2 font-medium text-p3-text-light text-xs uppercase tracking-wide">
+        <h2 className="eyebrow flex items-center gap-2 text-p3-text-light">
           {icon}
           {title}
         </h2>
         {more && (
           <ViewTransition name={more.morph} share="morph">
             <Link
-              className="inline-block text-p3-text-light text-xs underline-offset-4 hover:text-p3-text hover:underline dark:hover:text-p3-text-dark"
+              className="meta inline-block text-p3-text-light underline-offset-4 hover:text-p3-text hover:underline dark:hover:text-p3-text-dark"
               href={more.href}
               transitionTypes={["nav-forward"]}
             >

@@ -40,7 +40,7 @@ export default async function Bookmarks({ searchParams }) {
 
       <div className="mt-2 mb-10 flex flex-wrap items-center gap-x-4 gap-y-3">
         <YearPills year={year} />
-        <span className="ml-auto text-p3-text-light text-xs tabular-nums">
+        <span className="meta ml-auto text-p3-text-light">
           {bookmarks.length} {bookmarks.length === 1 ? "link" : "links"}
         </span>
       </div>
@@ -51,7 +51,7 @@ export default async function Bookmarks({ searchParams }) {
         <div className="grid gap-10">
           {months.map(({ label, items }) => (
             <section className="grid gap-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6" key={label}>
-              <h2 className="text-p3-text-light text-xs uppercase tracking-wide sm:sticky sm:top-14 sm:self-start sm:pt-2.5">
+              <h2 className="eyebrow text-p3-text-light sm:sticky sm:top-14 sm:self-start sm:pt-3">
                 {label}
               </h2>
               <ul className="grid gap-1">
@@ -86,7 +86,7 @@ function YearPills({ year }) {
           <Link
             aria-current={isActive ? "page" : undefined}
             className={cn(
-              "rounded-full border px-3 py-1 text-xs tabular-nums transition-colors",
+              "meta rounded-full border px-3 py-1 transition-colors",
               isActive
                 ? "border-p3-text bg-p3-text text-p3-background-light dark:border-p3-text-dark dark:bg-p3-text-dark dark:text-p3-background"
                 : "border-p3-border text-p3-text-light hover:text-p3-text dark:border-p3-border-dark dark:hover:text-p3-text-dark",
@@ -120,14 +120,14 @@ function BookmarkRow({ bookmark }) {
         >
           <span className="min-w-0 flex-1">
             <span className="line-clamp-2 font-medium text-sm sm:text-base">{title}</span>
-            <span className="mt-0.5 flex flex-wrap gap-x-2 text-p3-text-light text-xs">
+            <span className="meta mt-1 flex flex-wrap gap-x-2 text-p3-text-light">
               {domain && <span>{domain}</span>}
               {tags?.map((tag) => (
                 <span key={tag}>#{tag}</span>
               ))}
             </span>
           </span>
-          <span className="shrink-0 text-p3-text-light text-xs tabular-nums">
+          <span className="meta shrink-0 text-p3-text-light">
             {dayFormat.format(new Date(created))}
           </span>
         </a>

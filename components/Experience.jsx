@@ -11,7 +11,7 @@ export default function Experience() {
               <p className="font-medium">{job.company}</p>
               <p className="text-p3-text-light text-sm">{job.title}</p>
             </div>
-            <span className="ml-auto shrink-0 whitespace-nowrap text-p3-text-light text-xs tabular-nums">
+            <span className="meta ml-auto shrink-0 whitespace-nowrap text-p3-text-light">
               {job.period.replace("Present", "now")}
             </span>
           </li>
