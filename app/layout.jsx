@@ -1,10 +1,11 @@
 import { cn } from "@lib/utils";
+import { Geist, Geist_Mono } from "next/font/google";
 import "@styles/globals.css";
+import Navigation from "@components/Navigation";
+import { Sidebar } from "@components/Sidebar";
+import { ThemeProvider } from "@components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Header } from "components/Header";
-import Navigation from "components/Navigation";
-import { ThemeProvider } from "components/ThemeProvider";
 import { Toaster } from "sonner";
 
 export const metadata = {
@@ -18,7 +19,8 @@ export const metadata = {
     },
   ],
   creator: "Gökhan Öztürk",
-  description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+  description:
+    "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
   icon: [
     {
       rel: "icon",
@@ -47,26 +49,28 @@ export const metadata = {
     "Gökhan Öztürk",
     "gokhanozturk",
     "gokh4nozturk",
-    "developer",
-    "crafter",
+    "software engineer",
+    "iOS developer",
     "web developer",
+    "open source",
     "software engineer",
     "programmer",
     "frontend developer",
   ],
   metadataBase: new URL("https://gozturk.dev"),
   openGraph: {
-    description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+    description:
+      "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
     images: [
       {
-        alt: "Gökhan Öztürk – Developer, crafter",
+        alt: "Gökhan Öztürk – Software engineer in İstanbul",
         height: 630,
         type: "image/png",
         url: "https://gozturk.dev/api/og",
         width: 1200,
       },
     ],
-    title: "Gökhan Öztürk – Developer, crafter",
+    title: "Gökhan Öztürk – Software engineer",
     url: "/",
   },
   publisher: "Gökhan Öztürk",
@@ -83,22 +87,35 @@ export const metadata = {
     nocache: true,
   },
   title: {
-    default: "Gökhan Öztürk – Developer, crafter",
-    template: "%s | Gökhan Öztürk – Developer, crafter",
+    default: "Gökhan Öztürk – Software engineer",
+    template: "%s | Gökhan Öztürk",
   },
   twitter: {
     card: "summary_large_image",
     creator: "@gokh4nozturk",
-    description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+    description:
+      "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
     images: [
       {
         url: "https://gozturk.dev/api/og",
       },
     ],
     site: "@gokh4nozturk",
-    title: "Gökhan Öztürk – Developer, crafter",
+    title: "Gökhan Öztürk – Software engineer",
   },
 };
+
+// Self-hosted variable fonts; exposed as CSS variables for --font-sans/--font-mono.
+const geistSans = Geist({
+  display: "swap",
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-geist-sans",
+});
+const geistMono = Geist_Mono({
+  display: "swap",
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-geist-mono",
+});
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -106,8 +123,9 @@ const jsonLd = {
     {
       "@id": "https://gozturk.dev/#person",
       "@type": "Person",
-      description: "Personal website of Gökhan Öztürk, a developer and crafter.",
-      jobTitle: "Developer",
+      description:
+        "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
+      jobTitle: "Software Engineer",
       name: "Gökhan Öztürk",
       sameAs: ["https://github.com/gokh4nozturk", "https://twitter.com/gokh4nozturk"],
       url: "https://gozturk.dev",
@@ -115,9 +133,10 @@ const jsonLd = {
     {
       "@id": "https://gozturk.dev/#website",
       "@type": "WebSite",
-      description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+      description:
+        "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
       inLanguage: "en",
-      name: "Gökhan Öztürk – Developer, crafter",
+      name: "Gökhan Öztürk – Software engineer",
       publisher: { "@id": "https://gozturk.dev/#person" },
       url: "https://gozturk.dev",
     },
@@ -126,7 +145,7 @@ const jsonLd = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html className={cn(geistSans.variable, geistMono.variable)} lang="en" suppressHydrationWarning>
       <head>
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD requires raw injection
@@ -136,8 +155,8 @@ export default function RootLayout({ children }) {
       </head>
       <body
         className={cn(
-          "mx-auto grid h-dvh grid-rows-[auto_1fr] items-center bg-p3-background-light px-4 pt-4 font-sans text-p3-text",
-          "tracking-tight selection:bg-p3-primary-light selection:text-p3-text sm:max-w-3xl sm:px-10 sm:pt-10",
+          "mx-auto min-h-dvh max-w-6xl bg-p3-background-light px-4 font-sans text-p3-text antialiased",
+          "selection:bg-p3-primary-light selection:text-p3-text sm:px-10",
           "dark:bg-p3-background dark:text-p3-text-dark dark:selection:bg-p3-accent-dark dark:selection:text-p3-text-dark",
         )}
       >
@@ -147,8 +166,10 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
           enableSystem
         >
-          <Header />
-          <main className="flex h-full flex-col justify-between">{children}</main>
+          <div className="lg:grid lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-20">
+            <Sidebar />
+            <main className="min-w-0 pt-4 pb-40 lg:pt-14">{children}</main>
+          </div>
           <Navigation />
         </ThemeProvider>
         <Analytics />

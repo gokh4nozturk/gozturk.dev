@@ -1,3 +1,4 @@
+import HoverPreview from "@components/HoverPreview";
 import { Github as GithubIcon, Raindropio } from "@components/icons";
 import { Github } from "@lib/github";
 import Raindrop from "@lib/raindrop";
@@ -5,23 +6,39 @@ import { Unsplash } from "@lib/unsplash";
 import { cn, timeAgo } from "@lib/utils";
 import { Image as ImageIcon } from "lucide-react";
 
-function NowItem({ icon: Icon, label, title, href, date }) {
+function NowItem({ icon: Icon, label, title, href, date, photo }) {
+  const link = (
+    <a
+      className={cn(
+        "max-w-60 truncate text-p3-text decoration-p3-border underline-offset-4 hover:underline md:max-w-lg",
+        "dark:text-p3-text-dark",
+      )}
+      href={href}
+      rel="noreferrer"
+      target="_blank"
+    >
+      {title}
+    </a>
+  );
+
   return (
     <li className="flex items-center gap-2 text-xs sm:text-sm">
       <Icon className="size-3.5 shrink-0 opacity-70" />
       <span className="shrink-0 opacity-60">{label}</span>
-      <a
-        className={cn(
-          "max-w-60 truncate text-p3-text decoration-p3-border underline-offset-4 hover:underline md:max-w-lg",
-          "dark:text-p3-text-dark",
-        )}
-        href={href}
-        rel="noreferrer"
-        target="_blank"
-      >
-        {title}
-      </a>
-      <span className="ml-auto shrink-0 whitespace-nowrap opacity-50">{date}</span>
+      {photo ? (
+        <HoverPreview
+          alt={photo.alt}
+          color={photo.color}
+          height={photo.height}
+          src={photo.image}
+          width={photo.width}
+        >
+          {link}
+        </HoverPreview>
+      ) : (
+        link
+      )}
+      <span className="meta ml-auto shrink-0 whitespace-nowrap text-p3-text-light">{date}</span>
     </li>
   );
 }
@@ -76,6 +93,7 @@ export default async function Now() {
         icon={ImageIcon}
         key="photo"
         label="Shot"
+        photo={p}
         title={p.alt}
       />,
     );
@@ -84,15 +102,15 @@ export default async function Now() {
   if (rows.length === 0) return null;
 
   return (
-    <section className="mb-24 w-full sm:mb-32">
-      <h2 className="mb-2 flex items-center gap-2 font-medium text-sm">
+    <section className="w-full">
+      <h2 className="eyebrow mb-4 flex items-center gap-2 text-p3-text-light">
         <span className="relative flex size-2">
           <span className="absolute top-1/2 left-1/2 inline-flex size-2 -translate-x-1/2 -translate-y-1/2 animate-ping rounded-full bg-p3-primary opacity-75" />
           <span className="relative inline-flex size-2 rounded-full bg-p3-primary" />
         </span>
         Now
       </h2>
-      <ul className="flex flex-col gap-1.5">{rows}</ul>
+      <ul className="flex flex-col gap-2.5">{rows}</ul>
     </section>
   );
 }

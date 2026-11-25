@@ -18,7 +18,8 @@ const loadGoogleFont = async (font, text, weights) => {
 };
 
 export async function GET() {
-  const text = "Gökhan Öztürk - JavaScript enthusiast and 👻 Witchcraft 🕸️.";
+  // Every string drawn on the image, so the Google Fonts subset covers all glyphs.
+  const text = `Gökhan Öztürk Software engineer in İstanbul. I build products I'd want to use myself. github.com/gokh4nozturk linkedin.com/in/gokhannozturk ·`;
   try {
     return new ImageResponse(
       <div
@@ -29,7 +30,7 @@ export async function GET() {
           display: "flex",
           flexDirection: "column",
           fontFamily:
-            'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif',
+            'Geist, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif',
           height: "100%",
           justifyContent: "flex-end",
           MozOsxFontSmoothing: "grayscale",
@@ -60,11 +61,17 @@ export async function GET() {
             </p>
             <p
               style={{
+                display: "flex",
+                flexDirection: "column",
                 fontSize: "28px",
                 fontWeight: "500",
+                lineHeight: 1.35,
               }}
             >
-              Frontend developer, JavaScript enthusiast and 👻 Witchcraft 🕸️.
+              <span>Software engineer in İstanbul.</span>
+              <span style={{ color: "rgba(156, 163, 175, 1)" }}>
+                I build products I'd want to use myself.
+              </span>
             </p>
           </span>
         </div>
@@ -117,23 +124,23 @@ export async function GET() {
         emoji: "fluent",
         fonts: [
           {
-            data: await loadGoogleFont("Inter", text, "400"),
-            name: "Inter",
+            data: await loadGoogleFont("Geist", text, "400"),
+            name: "Geist",
             weight: 400,
           },
           {
-            data: await loadGoogleFont("Inter", text, "500"),
-            name: "Inter",
+            data: await loadGoogleFont("Geist", text, "500"),
+            name: "Geist",
             weight: 500,
           },
           {
-            data: await loadGoogleFont("Inter", text, "600"),
-            name: "Inter",
+            data: await loadGoogleFont("Geist", text, "600"),
+            name: "Geist",
             weight: 600,
           },
           {
-            data: await loadGoogleFont("Inter", text, "700"),
-            name: "Inter",
+            data: await loadGoogleFont("Geist", text, "700"),
+            name: "Geist",
             weight: 700,
           },
         ],

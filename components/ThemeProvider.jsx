@@ -74,7 +74,13 @@ export function DarkModeToggle() {
     // Safari snapshots the old theme as the "new" state and the reveal animation breaks.
     const run = () => flushSync(() => setTheme(next));
     if (typeof document !== "undefined" && document.startViewTransition) {
-      document.startViewTransition(run);
+      // Page navigations use view transitions too; this class selects the
+      // curtain reveal in globals.css for theme changes only.
+      const root = document.documentElement;
+      root.classList.add("theme-transition");
+      document
+        .startViewTransition(run)
+        .finished.finally(() => root.classList.remove("theme-transition"));
     } else {
       run();
     }

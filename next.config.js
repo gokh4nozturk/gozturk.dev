@@ -3,6 +3,10 @@ const createMDX = require('@next/mdx');
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // React <ViewTransition> for page transitions (app/template.jsx).
+    viewTransition: true,
+  },
   pageExtensions: ['js', 'jsx', 'mdx', 'ts', 'tsx'],
   images: {
     remotePatterns: [{ hostname: '**' }],

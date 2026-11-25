@@ -1,13 +1,17 @@
 import About from "@components/About";
-import HelloAnimation from "@components/HelloAnimation";
+import Experience from "@components/Experience";
 import Now from "@components/Now";
+import RecentBookmarks from "@components/RecentBookmarks";
+import SelectedWork from "@components/SelectedWork";
 
 export default function Home() {
   return (
-    <div className="flex h-full flex-col justify-between">
+    <div className="flex flex-col gap-14">
       <About />
-      <HelloAnimation />
       <Now />
+      <SelectedWork />
+      <Experience />
+      <RecentBookmarks />
     </div>
   );
 }

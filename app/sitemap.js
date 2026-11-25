@@ -7,12 +7,6 @@ export default function sitemap() {
       url: "https://gozturk.dev",
     },
     {
-      changeFrequency: "weekly",
-      lastModified: new Date(),
-      priority: 0.8,
-      url: "https://gozturk.dev/photos",
-    },
-    {
       changeFrequency: "monthly",
       lastModified: new Date(),
       priority: 0.8,
@@ -23,12 +17,6 @@ export default function sitemap() {
       lastModified: new Date(),
       priority: 0.7,
       url: "https://gozturk.dev/bookmarks",
-    },
-    {
-      changeFrequency: "weekly",
-      lastModified: new Date(),
-      priority: 0.7,
-      url: "https://gozturk.dev/resume",
     },
   ];
 }

@@ -1,18 +1,13 @@
 import { cn } from "@lib/utils";
-import { usePathname } from "next/navigation";
 
 export function NameTransition() {
-  const pathname = usePathname();
-  const isResume = pathname === "/resume";
-
   return (
-    <h1 className="font-medium text-xl transition-element sm:text-3xl">
+    <h1 className="font-medium text-xl transition-element sm:text-2xl">
       <span className="sr-only">Gökhan Öztürk</span>
       <span aria-hidden="true" className="group relative block overflow-hidden">
         <span
           className={cn(
             "inline-block transition-all duration-300 ease-in-out group-hover:-translate-y-full",
-            isResume && "-translate-y-full",
           )}
         >
           {/* these '123' suffix for second word, because they are not same length */}
@@ -28,7 +23,6 @@ export function NameTransition() {
         <span
           className={cn(
             "absolute top-0 left-0 inline-block translate-y-full transition-all duration-300 ease-in-out group-hover:translate-y-0",
-            isResume && "translate-y-0",
           )}
         >
           {Array.from("👻 Witchcraft 🕸️").map((letter) => (
