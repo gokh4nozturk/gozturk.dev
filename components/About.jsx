@@ -1,76 +1,12 @@
-import AnimatedLink from "@components/AnimatedLink";
-import Link from "next/link";
-
 export default function About() {
   return (
-    <div className="text-sm sm:text-base">
+    <section className="grid gap-4 text-base sm:text-lg">
       <p>Hi 👋 my name is Gökhan, a software engineer.</p>
-      <p>
+      <p className="text-p3-text-light">
         I am an enthusiast for well-designed products, free & open source software contributor &
-        maintainer, and automator of anything that I can.
+        maintainer, and automator of anything that I can. By day I build product features at
+        Rockads; on the side I ship my own iOS apps and SaaS tools.
       </p>
-      <div className="mt-6">
-        <p className="mb-2 text-p3-text-light">Latest works</p>
-        <ul className="grid gap-1">
-          <li>
-            <AnimatedLink href="https://eatnibble.app" name="eatnibble">
-              eatnibble
-            </AnimatedLink>
-            <span className="text-p3-text-light">
-              {" "}
-              — iOS app that turns a meal photo into calories & macros ·{" "}
-              <Link
-                className="whitespace-nowrap underline-offset-4 hover:text-p3-text hover:underline dark:hover:text-p3-text-dark"
-                href="/apps"
-              >
-                all apps →
-              </Link>
-            </span>
-          </li>
-          <li>
-            <AnimatedLink href="https://linguolink.dev" name="Linguolink">
-              Linguolink
-            </AnimatedLink>
-            <span className="text-p3-text-light">
-              {" "}
-              — localization platform, dashboard + REST API
-            </span>
-          </li>
-          <li>
-            <AnimatedLink href="https://rocket.gozturk.dev" name="rocket">
-              rocket
-            </AnimatedLink>
-            <span className="text-p3-text-light"> — my own shadcn component registry</span>
-          </li>
-          {/* <li>
-            <AnimatedLink href="https://gokh4nozturk.github.io/orbit-absorb/" name="orbit-absorb">
-              orbit-absorb
-            </AnimatedLink>
-            <span className="text-p3-text-light">
-              {" "}
-              — dependency-free orbiting-icons web component
-            </span>
-          </li> */}
-          <li>
-            <AnimatedLink href="https://gauge.gozturk.dev" name="gauge">
-              gauge
-            </AnimatedLink>
-            <span className="text-p3-text-light">
-              {" "}
-              — customizable circular gauge component for Vue
-            </span>
-          </li>
-        </ul>
-      </div>
-      {/* <br />
-      <br />
-      <AnimatedLink href="https://cal.com/gokhanozturk/15min" name="Cal.com">
-        <span className="inline-flex items-center gap-2">
-          {" "}
-          meet me at:
-          <Calcom className="w-20 pb-1" />
-        </span>
-      </AnimatedLink> */}
-    </div>
+    </section>
   );
 }

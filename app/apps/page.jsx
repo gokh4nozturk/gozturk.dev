@@ -1,7 +1,6 @@
 import AnimatedLink from "@components/AnimatedLink";
 import TitleDescription from "@components/TitleDescription";
-import { ScrollArea } from "@components/ui/scroll-area";
-import { apps } from "@lib/apps-data";
+import { apps, webProjects } from "@lib/apps-data";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 
@@ -17,13 +16,25 @@ export default function Apps() {
         description="iOS apps and games I've built, and how they work under the hood."
         title="Apps & games"
       />
-      <ScrollArea className="mb-24 max-h-[calc(100dvh-15rem)]">
+      <div>
         <div className="grid divide-y divide-p3-border dark:divide-p3-border-dark">
           {apps.map((app) => (
             <AppEntry app={app} key={app.slug} />
           ))}
         </div>
-      </ScrollArea>
+
+        <section className="mt-8 border-p3-border border-t pt-8 dark:border-p3-border-dark">
+          <h2 className="font-semibold text-lg sm:text-xl">Web & open source</h2>
+          <p className="mt-1 text-p3-text-light text-sm">
+            Products, component libraries and tools for the web.
+          </p>
+          <ul className="mt-6 grid gap-6">
+            {webProjects.map((project) => (
+              <WebProjectEntry key={project.slug} project={project} />
+            ))}
+          </ul>
+        </section>
+      </div>
     </div>
   );
 }
@@ -77,6 +88,29 @@ function AppEntry({ app }) {
         ))}
       </ul>
     </article>
+  );
+}
+
+function WebProjectEntry({ project }) {
+  return (
+    <li className="flex scroll-mt-4 items-start gap-4" id={project.slug}>
+      <Image
+        alt={`${project.name} logo`}
+        className="size-14 shrink-0 rounded-[14px] border border-p3-border object-cover dark:border-p3-border-dark"
+        height={56}
+        src={project.icon}
+        width={56}
+      />
+      <div className="min-w-0">
+        <h3 className="font-semibold text-base sm:text-lg">{project.name}</h3>
+        <p className="text-p3-text-light text-sm">{project.description}</p>
+        <div className="mt-1.5 text-sm">
+          <ExternalLink href={project.href} name={`${project.name} website`}>
+            {new URL(project.href).hostname}
+          </ExternalLink>
+        </div>
+      </div>
+    </li>
   );
 }
 

@@ -1,10 +1,10 @@
 import { cn } from "@lib/utils";
 import "@styles/globals.css";
+import Navigation from "@components/Navigation";
+import { Sidebar } from "@components/Sidebar";
+import { ThemeProvider } from "@components/ThemeProvider";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Header } from "components/Header";
-import Navigation from "components/Navigation";
-import { ThemeProvider } from "components/ThemeProvider";
 import { Toaster } from "sonner";
 
 export const metadata = {
@@ -136,8 +136,8 @@ export default function RootLayout({ children }) {
       </head>
       <body
         className={cn(
-          "mx-auto grid h-dvh grid-rows-[auto_1fr] items-center bg-p3-background-light px-4 pt-4 font-sans text-p3-text",
-          "tracking-tight selection:bg-p3-primary-light selection:text-p3-text sm:max-w-3xl sm:px-10 sm:pt-10",
+          "mx-auto min-h-dvh max-w-6xl bg-p3-background-light px-4 font-sans text-p3-text tracking-tight",
+          "selection:bg-p3-primary-light selection:text-p3-text sm:px-10",
           "dark:bg-p3-background dark:text-p3-text-dark dark:selection:bg-p3-accent-dark dark:selection:text-p3-text-dark",
         )}
       >
@@ -147,8 +147,10 @@ export default function RootLayout({ children }) {
           disableTransitionOnChange
           enableSystem
         >
-          <Header />
-          <main className="flex h-full flex-col justify-between">{children}</main>
+          <div className="lg:grid lg:grid-cols-[22rem_minmax(0,1fr)] lg:gap-20">
+            <Sidebar />
+            <main className="min-w-0 pt-4 pb-40 lg:pt-14">{children}</main>
+          </div>
           <Navigation />
         </ThemeProvider>
         <Analytics />

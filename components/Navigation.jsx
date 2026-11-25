@@ -1,21 +1,15 @@
 "use client";
 
-import { CircularMenu } from "@components/ground/menu";
 import { AnimatedTabs } from "@components/luxe/animated-tabs";
 import ThankYou from "@components/ThankYou";
 import { cn } from "@lib/utils";
-import { Bookmark, FileUser, Home, Image, LayoutGrid } from "lucide-react";
+import { Bookmark, Home, LayoutGrid } from "lucide-react";
 
 const navItems = [
   {
     icon: Home,
     name: "Home",
     path: "/",
-  },
-  {
-    icon: Image,
-    name: "Photos",
-    path: "/photos",
   },
   {
     icon: LayoutGrid,
@@ -27,11 +21,6 @@ const navItems = [
     name: "Bookmarks",
     path: "/bookmarks",
   },
-  {
-    icon: FileUser,
-    name: "Resume",
-    path: "/resume",
-  },
 ];
 
 export default function Navigation() {
@@ -42,11 +31,9 @@ export default function Navigation() {
         "max-w-fit rounded-full px-4 py-2 backdrop-blur-sm dark:border-p3-border-dark",
       )}
     >
-      <AnimatedTabs tabs={navItems} />|
-      <div className="mr-3 flex items-center gap-10">
-        <ThankYou />
-        <CircularMenu />
-      </div>
+      <AnimatedTabs tabs={navItems} />
+      <span className="h-5 w-px bg-p3-border dark:bg-p3-border-dark" />
+      <ThankYou />
     </div>
   );
 }
