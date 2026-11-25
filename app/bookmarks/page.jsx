@@ -34,6 +34,7 @@ export default async function Bookmarks({ searchParams }) {
     <div className="w-full">
       <TitleDescription
         description="Links I found worth keeping: tools, articles and things to come back to."
+        morph="bookmarks-title"
         title="Bookmarks"
       />
 

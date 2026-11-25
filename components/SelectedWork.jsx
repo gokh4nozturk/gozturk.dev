@@ -4,6 +4,7 @@ import { cn } from "@lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { ViewTransition } from "react";
 
 const rowClass = cn(
   "group -mx-3 flex items-center gap-4 rounded-xl px-3 py-2.5 transition-colors",
@@ -15,12 +16,14 @@ const iconClass =
 
 export default function SelectedWork() {
   return (
-    <Section more={{ href: "/apps", label: "all apps" }} title="Latest works">
+    <Section more={{ href: "/apps", label: "all apps", morph: "apps-title" }} title="Latest works">
       <ul className="grid gap-1">
         {apps.map((app) => (
           <li key={app.slug}>
-            <Link className={rowClass} href={`/apps#${app.slug}`}>
-              <Image alt="" className={iconClass} height={44} src={app.icon} width={44} />
+            <Link className={rowClass} href={`/apps#${app.slug}`} transitionTypes={["nav-forward"]}>
+              <ViewTransition name={`app-icon-${app.slug}`} share="morph">
+                <Image alt="" className={iconClass} height={44} src={app.icon} width={44} />
+              </ViewTransition>
               <WorkText description={app.description} kind={app.kind} name={app.name} />
             </Link>
           </li>

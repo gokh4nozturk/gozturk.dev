@@ -7,7 +7,10 @@ export default async function RecentBookmarks() {
   if (!bookmarks?.length) return null;
 
   return (
-    <Section more={{ href: "/bookmarks", label: "all bookmarks" }} title="Recently saved">
+    <Section
+      more={{ href: "/bookmarks", label: "all bookmarks", morph: "bookmarks-title" }}
+      title="Recently saved"
+    >
       <ul className="grid gap-2.5">
         {bookmarks.map((bookmark) => (
           <li className="flex items-baseline gap-4 text-sm" key={bookmark._id}>

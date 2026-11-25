@@ -217,21 +217,120 @@
   }
 }
 
-/* View transitions */
-::view-transition-group(root) {
+/* Theme toggle: a curtain reveal of the whole page. Scoped to
+   html.theme-transition (set by DarkModeToggle) so page navigations, which
+   also use view transitions, don't play it. */
+html.theme-transition::view-transition-group(root) {
   animation-duration: 0.7s;
   animation-timing-function: var(--expo-out);
 }
-::view-transition-new(root) {
+html.theme-transition::view-transition-new(root) {
   animation-name: reveal-light;
 }
-::view-transition-old(root),
-.dark::view-transition-old(root) {
+html.theme-transition::view-transition-old(root) {
   animation: none;
   z-index: -1;
 }
-.dark::view-transition-new(root) {
+html.theme-transition.dark::view-transition-new(root) {
   animation-name: reveal-dark;
+}
+
+/* Page transitions (app/template.jsx). Only the content column animates: the
+   root (sidebar, nav pill) switches at once, so the live nav droplet springs
+   without a ghost of its old position. Direction follows the nav order. */
+html:not(.theme-transition)::view-transition-old(root) {
+  display: none;
+}
+html:not(.theme-transition)::view-transition-new(root) {
+  animation: none;
+}
+
+:root {
+  --page-shift: 28px;
+  --page-out: 180ms;
+  --page-in: 420ms;
+  --page-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+::view-transition-old(.page-out-forward) {
+  animation: var(--page-out) ease-in both page-out-left;
+}
+::view-transition-new(.page-in-forward) {
+  animation: var(--page-in) var(--page-ease) 60ms both page-in-from-right;
+}
+::view-transition-old(.page-out-back) {
+  animation: var(--page-out) ease-in both page-out-right;
+}
+::view-transition-new(.page-in-back) {
+  animation: var(--page-in) var(--page-ease) 60ms both page-in-from-left;
+}
+::view-transition-old(.page-fade-out) {
+  animation: var(--page-out) ease-in both page-fade-out;
+}
+::view-transition-new(.page-fade-in) {
+  animation: var(--page-in) var(--page-ease) 60ms both page-fade-in;
+}
+
+/* Shared elements (app icons, section links -> page titles) morph between
+   their two positions; old and new crossfade inside the moving box. */
+::view-transition-group(.morph) {
+  animation-duration: 520ms;
+  animation-timing-function: cubic-bezier(0.3, 1.25, 0.4, 1);
+}
+::view-transition-old(.morph),
+::view-transition-new(.morph) {
+  animation-duration: 320ms;
+  height: 100%;
+}
+
+@keyframes page-out-left {
+  to {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translateX(calc(var(--page-shift) * -1));
+  }
+}
+@keyframes page-out-right {
+  to {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translateX(var(--page-shift));
+  }
+}
+@keyframes page-in-from-right {
+  from {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translateX(var(--page-shift));
+  }
+}
+@keyframes page-in-from-left {
+  from {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translateX(calc(var(--page-shift) * -1));
+  }
+}
+@keyframes page-fade-out {
+  to {
+    filter: blur(4px);
+    opacity: 0;
+  }
+}
+@keyframes page-fade-in {
+  from {
+    filter: blur(4px);
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 @keyframes reveal-dark {
   from {

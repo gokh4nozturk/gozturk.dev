@@ -3,6 +3,7 @@ import TitleDescription from "@components/TitleDescription";
 import { apps, webProjects } from "@lib/apps-data";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import { ViewTransition } from "react";
 
 export const metadata = {
   description: "iOS apps and games I've built, and how they work under the hood.",
@@ -14,6 +15,7 @@ export default function Apps() {
     <div className="w-full">
       <TitleDescription
         description="iOS apps and games I've built, and how they work under the hood."
+        morph="apps-title"
         title="Apps & games"
       />
       <div>
@@ -43,13 +45,15 @@ function AppEntry({ app }) {
   return (
     <article className="scroll-mt-4 py-8 first:pt-2" id={app.slug}>
       <header className="flex items-start gap-4">
-        <Image
-          alt={`${app.name} app icon`}
-          className="size-14 shrink-0 rounded-[14px] border border-p3-border dark:border-p3-border-dark"
-          height={56}
-          src={app.icon}
-          width={56}
-        />
+        <ViewTransition name={`app-icon-${app.slug}`} share="morph">
+          <Image
+            alt={`${app.name} app icon`}
+            className="size-14 shrink-0 rounded-[14px] border border-p3-border dark:border-p3-border-dark"
+            height={56}
+            src={app.icon}
+            width={56}
+          />
+        </ViewTransition>
         <div className="min-w-0">
           <h2 className="font-semibold text-lg sm:text-xl">{app.name}</h2>
           <p className="text-p3-text-light text-xs sm:text-sm">

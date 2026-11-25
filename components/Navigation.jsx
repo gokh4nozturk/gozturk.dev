@@ -41,6 +41,7 @@ export default function Navigation() {
   const lens = useLensMap(navRef);
   const hasNavigated = useHasNavigated(pathname);
   usePointerLight(navRef);
+  const currentIndex = navItems.findIndex((item) => item.path === pathname);
 
   return (
     <nav
@@ -53,8 +54,10 @@ export default function Navigation() {
     >
       {lens && <RefractionFilter {...lens} />}
       <ul className="flex items-center">
-        {navItems.map(({ name, path, icon: Icon }) => {
+        {navItems.map(({ name, path, icon: Icon }, index) => {
           const isActive = pathname === path;
+          // Content slides the same way the droplet moves (see template.jsx).
+          const direction = index < currentIndex ? "nav-back" : "nav-forward";
           return (
             <li key={path}>
               <Link
@@ -68,6 +71,7 @@ export default function Navigation() {
                 )}
                 href={path}
                 title={name}
+                transitionTypes={isActive ? undefined : [direction]}
               >
                 {isActive && (
                   <motion.span
