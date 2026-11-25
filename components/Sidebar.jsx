@@ -65,7 +65,14 @@ export function Sidebar() {
 
       <SocialLinks className="lg:hidden" />
 
-      <div className={cn("flex items-center py-4 lg:flex-1 lg:py-0", !isHome && "max-lg:hidden")}>
+      {/* The hello canvas overhangs its box by 24px for the glass shadow; on
+          narrow screens that would widen the page, so clip it sideways there. */}
+      <div
+        className={cn(
+          "flex items-center py-4 max-lg:overflow-x-clip lg:flex-1 lg:py-0",
+          !isHome && "max-lg:hidden",
+        )}
+      >
         <div className="w-full">
           <HelloAnimation />
         </div>

@@ -292,7 +292,9 @@ html.theme-transition.dark::view-transition-new(root) {
 
 /* Page transitions (app/template.jsx). Only the content column animates: the
    root (sidebar, nav pill) switches at once, so the live nav droplet springs
-   without a ghost of its old position. Direction follows the nav order. */
+   without a ghost of its old position. Direction follows the nav order.
+   Keyframes use opacity and transform only; a blur filter on full-column
+   snapshots makes Safari's view transitions stutter. */
 html:not(.theme-transition)::view-transition-old(root) {
   display: none;
 }
@@ -340,41 +342,35 @@ html:not(.theme-transition)::view-transition-new(root) {
 
 @keyframes page-out-left {
   to {
-    filter: blur(4px);
     opacity: 0;
     transform: translateX(calc(var(--page-shift) * -1));
   }
 }
 @keyframes page-out-right {
   to {
-    filter: blur(4px);
     opacity: 0;
     transform: translateX(var(--page-shift));
   }
 }
 @keyframes page-in-from-right {
   from {
-    filter: blur(4px);
     opacity: 0;
     transform: translateX(var(--page-shift));
   }
 }
 @keyframes page-in-from-left {
   from {
-    filter: blur(4px);
     opacity: 0;
     transform: translateX(calc(var(--page-shift) * -1));
   }
 }
 @keyframes page-fade-out {
   to {
-    filter: blur(4px);
     opacity: 0;
   }
 }
 @keyframes page-fade-in {
   from {
-    filter: blur(4px);
     opacity: 0;
     transform: translateY(8px);
   }

@@ -11,7 +11,7 @@ export default async function RecentBookmarks() {
       more={{ href: "/bookmarks", label: "all bookmarks", morph: "bookmarks-title" }}
       title="Recently saved"
     >
-      <ul className="grid gap-2.5">
+      <ul className="grid grid-cols-1 gap-2.5">
         {bookmarks.map((bookmark) => (
           <li className="flex items-baseline gap-4 text-sm" key={bookmark._id}>
             <a
