@@ -70,10 +70,10 @@ function AppEntry({ app }) {
         </div>
       </header>
 
-      <p className="mt-4 text-sm sm:text-base">{app.summary}</p>
+      <p className="mt-4 max-w-[62ch] text-base">{app.summary}</p>
 
-      <h3 className="eyebrow mt-5 mb-2 text-p3-text-light">Under the hood</h3>
-      <ul className="grid list-disc gap-1.5 pl-5 text-sm marker:text-p3-text-light">
+      <h3 className="eyebrow mt-6 mb-3 text-p3-text-light">Under the hood</h3>
+      <ul className="grid max-w-[68ch] list-disc gap-2.5 pl-5 text-sm leading-6 marker:text-p3-text-light">
         {app.highlights.map((item) => (
           <li key={item}>{item}</li>
         ))}

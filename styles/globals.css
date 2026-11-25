@@ -34,6 +34,9 @@
   --text-3xl: 1.875rem;
   --text-3xl--line-height: 2.25rem;
   --text-3xl--letter-spacing: -0.028em;
+  --text-4xl: 2.25rem;
+  --text-4xl--line-height: 2.625rem;
+  --text-4xl--letter-spacing: -0.034em;
 
   --color-p3-light: var(--p3-light);
   --color-p3-dark: var(--p3-dark);
@@ -62,6 +65,29 @@
   --color-p3-border-dark: var(--p3-border-dark);
 
   --animate-marquee: marquee var(--duration) linear infinite;
+  --animate-wave: wave 1.2s ease-in-out;
+}
+
+/* A hand wave: a few quick swings around the wrist, then rest. */
+@keyframes wave {
+  0%,
+  60%,
+  100% {
+    transform: rotate(0deg);
+  }
+  10%,
+  30% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
 }
 
 @keyframes marquee {
@@ -237,6 +263,13 @@
   :where(h2[id], h3[id], h4[id], section[id]) {
     scroll-margin-top: 6rem;
   }
+}
+
+/* Secondary text needs a lighter gray on the dark background: 0.4 gray is
+   ~3.3:1 there (below WCAG AA 4.5:1 for small text); 0.56 is ~5.8:1. */
+.dark {
+  --p3-text-light: oklch(64% 0.003 95);
+  --p3-text-light: color(display-p3 0.56 0.56 0.56);
 }
 
 /* Theme toggle: a curtain reveal of the whole page. Scoped to

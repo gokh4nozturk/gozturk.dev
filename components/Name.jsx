@@ -2,7 +2,7 @@ import { cn } from "@lib/utils";
 
 export function NameTransition() {
   return (
-    <h1 className="font-medium text-xl transition-element sm:text-3xl">
+    <h1 className="font-medium text-xl transition-element sm:text-2xl">
       <span className="sr-only">Gökhan Öztürk</span>
       <span aria-hidden="true" className="group relative block overflow-hidden">
         <span
