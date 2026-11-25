@@ -1,6 +1,7 @@
 import AnimatedLink from "@components/AnimatedLink";
 import TitleDescription from "@components/TitleDescription";
-import { apps, webProjects } from "@lib/apps-data";
+import { SiGithub } from "@icons-pack/react-simple-icons";
+import { apps, githubProfile, openSource, webProjects } from "@lib/apps-data";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { ViewTransition } from "react";
@@ -36,6 +37,26 @@ export default function Apps() {
             ))}
           </ul>
         </section>
+
+        <section
+          className="mt-8 scroll-mt-4 border-p3-border border-t pt-8 dark:border-p3-border-dark"
+          id="open-source"
+        >
+          <h2 className="font-semibold text-lg sm:text-xl">Open source</h2>
+          <p className="mt-1 text-p3-text-light text-sm">Libraries I maintain or contribute to.</p>
+          <ul className="mt-6 grid gap-5">
+            {openSource.map((item) => (
+              <OpenSourceEntry item={item} key={item.repo} />
+            ))}
+          </ul>
+        </section>
+
+        <p className="mt-10 border-p3-border border-t pt-8 text-p3-text-light text-sm dark:border-p3-border-dark">
+          You can find more on{" "}
+          <ExternalLink href={githubProfile} name="GitHub profile">
+            <span className="text-p3-text dark:text-p3-text-dark">my GitHub</span>
+          </ExternalLink>
+        </p>
       </div>
     </div>
   );
@@ -111,6 +132,24 @@ function WebProjectEntry({ project }) {
             {new URL(project.href).hostname}
           </ExternalLink>
         </div>
+      </div>
+    </li>
+  );
+}
+
+function OpenSourceEntry({ item }) {
+  return (
+    <li className="grid gap-1">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h3 className="font-semibold text-base">{item.name}</h3>
+        <span className="meta text-p3-text-light">{item.role}</span>
+      </div>
+      <p className="text-p3-text-light text-sm">{item.description}</p>
+      <div className="meta mt-0.5 flex items-center gap-1.5">
+        <SiGithub aria-hidden="true" className="opacity-60" color="currentColor" size={12} />
+        <ExternalLink href={item.href} name={`${item.name} on GitHub`}>
+          {item.repo}
+        </ExternalLink>
       </div>
     </li>
   );

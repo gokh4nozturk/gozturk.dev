@@ -11,30 +11,40 @@ const rowClass = cn(
   "hover:bg-p3-background-dark/5 dark:hover:bg-p3-background-light/5",
 );
 
+// Newest first: apps, then web projects. The home page shows only the latest few.
+const LATEST_COUNT = 3;
+const works = [
+  ...apps.map((app) => ({ ...app, type: "app" })),
+  ...webProjects.map((project) => ({ ...project, kind: "Web", type: "web" })),
+].slice(0, LATEST_COUNT);
+
 const iconClass =
   "size-11 shrink-0 rounded-[11px] border border-p3-border object-cover dark:border-p3-border-dark";
 
 export default function SelectedWork() {
   return (
-    <Section more={{ href: "/apps", label: "all apps", morph: "apps-title" }} title="Latest works">
+    <Section more={{ href: "/apps", label: "all works", morph: "apps-title" }} title="Latest works">
       <ul className="grid grid-cols-1 gap-1">
-        {apps.map((app) => (
-          <li key={app.slug}>
-            <Link className={rowClass} href={`/apps#${app.slug}`} transitionTypes={["nav-forward"]}>
-              <ViewTransition name={`app-icon-${app.slug}`} share="morph">
-                <Image alt="" className={iconClass} height={44} src={app.icon} width={44} />
-              </ViewTransition>
-              <WorkText description={app.description} kind={app.kind} name={app.name} />
-            </Link>
-          </li>
-        ))}
-        {webProjects.map((project) => (
-          <li key={project.slug}>
-            <a className={rowClass} href={project.href} rel="noreferrer" target="_blank">
-              <Image alt="" className={iconClass} height={44} src={project.icon} width={44} />
-              <WorkText description={project.description} kind="Web" name={project.name} />
-              <ArrowUpRight className="ml-auto size-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
-            </a>
+        {works.map((work) => (
+          <li key={work.slug}>
+            {work.type === "app" ? (
+              <Link
+                className={rowClass}
+                href={`/apps#${work.slug}`}
+                transitionTypes={["nav-forward"]}
+              >
+                <ViewTransition name={`app-icon-${work.slug}`} share="morph">
+                  <Image alt="" className={iconClass} height={44} src={work.icon} width={44} />
+                </ViewTransition>
+                <WorkText description={work.description} kind={work.kind} name={work.name} />
+              </Link>
+            ) : (
+              <a className={rowClass} href={work.href} rel="noreferrer" target="_blank">
+                <Image alt="" className={iconClass} height={44} src={work.icon} width={44} />
+                <WorkText description={work.description} kind={work.kind} name={work.name} />
+                <ArrowUpRight className="ml-auto size-4 shrink-0 opacity-0 transition-opacity group-hover:opacity-60" />
+              </a>
+            )}
           </li>
         ))}
       </ul>
