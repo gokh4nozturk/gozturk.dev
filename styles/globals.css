@@ -301,44 +301,46 @@
   @apply mb-1;
 }
 
-/* Liquid glass: the bottom navigation pill and its active-tab lens.
-   Layers: tinted gradient body + backdrop blur/saturate, a bright rim drawn
-   with a masked gradient border (::before), and a specular glint that follows
-   the pointer (::after, driven by --glass-x / --glass-y). Chromium also bends
-   the backdrop through an SVG displacement filter (data-refract). */
-.liquid-glass {
-  --glass-body-top: rgb(255 255 255 / 0.32);
-  --glass-body-bottom: rgb(255 255 255 / 0.1);
-  --glass-rim: rgb(255 255 255 / 0.95);
-  --glass-rim-soft: rgb(255 255 255 / 0.35);
-  --glass-inner: rgb(255 255 255 / 0.7);
-  --glass-glint: rgb(255 255 255 / 0.55);
-  --glass-shadow: rgb(15 23 42 / 0.18);
-  --glass-edge: rgb(15 23 42 / 0.08);
+/* Liquid glass: the bottom navigation pill and its active-tab droplet.
+   - Body: nearly clear tint over a light blur. In Chromium the backdrop also
+     goes through #liquid-glass-refraction (data-refract), an SVG filter that
+     bends content along the rim like a convex lens, with a slight color
+     fringe. Other browsers get a frosted fallback instead.
+   - Rim: a thin specular line (::before, masked conic gradient) whose bright
+     spot turns toward the pointer via --glass-angle. */
+@property --glass-angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: -45deg;
+}
 
-  -webkit-backdrop-filter: blur(12px) saturate(190%) brightness(1.04);
-  backdrop-filter: blur(12px) saturate(190%) brightness(1.04);
-  background: linear-gradient(180deg, var(--glass-body-top), var(--glass-body-bottom));
+.liquid-glass {
+  --glass-tint-top: rgb(255 255 255 / 0.5);
+  --glass-tint-bottom: rgb(255 255 255 / 0.28);
+  --glass-rim: rgb(255 255 255 / 1);
+  --glass-rim-soft: rgb(255 255 255 / 0.55);
+  --glass-rim-base: rgb(255 255 255 / 0.22);
+  --glass-inner: rgb(255 255 255 / 0.5);
+  --glass-shadow: rgb(15 23 42 / 0.16);
+  --glass-edge: rgb(15 23 42 / 0.1);
+
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+  backdrop-filter: blur(14px) saturate(180%);
+  background: linear-gradient(180deg, var(--glass-tint-top), var(--glass-tint-bottom));
   box-shadow:
-    inset 0 1px 1px var(--glass-inner),
-    inset 0 -1px 2px rgb(255 255 255 / 0.18),
-    0 0 0 0.5px var(--glass-edge),
-    0 2px 6px -1px var(--glass-shadow),
-    0 16px 40px -12px var(--glass-shadow);
+    inset 0 0 0 0.5px var(--glass-edge),
+    inset 0 1px 8px -2px var(--glass-inner),
+    0 1px 3px -1px var(--glass-shadow),
+    0 12px 32px -10px var(--glass-shadow);
   isolation: isolate;
+  transition: --glass-angle 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .liquid-glass[data-refract] {
-  backdrop-filter: url(#liquid-glass-refraction) blur(4px) saturate(190%) brightness(1.04);
-}
+  --glass-tint-top: rgb(255 255 255 / 0.16);
+  --glass-tint-bottom: rgb(255 255 255 / 0.04);
 
-.liquid-glass::before,
-.liquid-glass::after {
-  border-radius: inherit;
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
+  backdrop-filter: url(#liquid-glass-refraction) blur(1.5px) saturate(170%) brightness(1.05);
 }
 
 .liquid-glass::before {
@@ -346,54 +348,56 @@
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
-  background: linear-gradient(
-    135deg,
-    var(--glass-rim) 0%,
-    transparent 32%,
-    transparent 62%,
-    var(--glass-rim-soft) 100%
+  background: conic-gradient(
+    from calc(var(--glass-angle) - 50deg),
+    var(--glass-rim-base) 0deg,
+    var(--glass-rim) 50deg,
+    var(--glass-rim-base) 100deg,
+    var(--glass-rim-base) 180deg,
+    var(--glass-rim-soft) 230deg,
+    var(--glass-rim-base) 280deg,
+    var(--glass-rim-base) 360deg
   );
+  border-radius: inherit;
+  content: "";
+  inset: 0;
   mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
   mask-composite: exclude;
   padding: 1px;
+  pointer-events: none;
+  position: absolute;
   z-index: 1;
 }
 
-.liquid-glass::after {
-  background: radial-gradient(
-    140px circle at var(--glass-x, 25%) var(--glass-y, -20%),
-    var(--glass-glint),
-    transparent 65%
-  );
-  opacity: var(--glass-glint-opacity, 0.7);
-  transition: opacity 0.4s ease;
-  z-index: -1;
-}
-
 .glass-lens {
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.75), rgb(226 232 240 / 0.55));
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.7), rgb(226 232 240 / 0.45));
   box-shadow:
     inset 0 1px 1px rgb(255 255 255 / 1),
-    inset 0 -1px 2px rgb(15 23 42 / 0.1),
-    0 0 0 0.5px rgb(15 23 42 / 0.12),
-    0 4px 14px -4px rgb(15 23 42 / 0.35);
+    inset 0 -1px 2px rgb(15 23 42 / 0.08),
+    0 0 0 0.5px rgb(15 23 42 / 0.1),
+    0 4px 14px -4px rgb(15 23 42 / 0.3);
 }
 
 .dark .liquid-glass {
-  --glass-body-top: rgb(255 255 255 / 0.1);
-  --glass-body-bottom: rgb(255 255 255 / 0.03);
-  --glass-rim: rgb(255 255 255 / 0.45);
-  --glass-rim-soft: rgb(255 255 255 / 0.15);
-  --glass-inner: rgb(255 255 255 / 0.22);
-  --glass-glint: rgb(255 255 255 / 0.16);
+  --glass-tint-top: rgb(40 40 46 / 0.55);
+  --glass-tint-bottom: rgb(20 20 24 / 0.45);
+  --glass-rim: rgb(255 255 255 / 0.7);
+  --glass-rim-soft: rgb(255 255 255 / 0.3);
+  --glass-rim-base: rgb(255 255 255 / 0.1);
+  --glass-inner: rgb(255 255 255 / 0.12);
   --glass-shadow: rgb(0 0 0 / 0.55);
-  --glass-edge: rgb(0 0 0 / 0.4);
+  --glass-edge: rgb(0 0 0 / 0.5);
+}
+
+.dark .liquid-glass[data-refract] {
+  --glass-tint-top: rgb(255 255 255 / 0.07);
+  --glass-tint-bottom: rgb(255 255 255 / 0.02);
 }
 
 .dark .glass-lens {
-  background: linear-gradient(180deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.08));
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.2), rgb(255 255 255 / 0.07));
   box-shadow:
     inset 0 1px 1px rgb(255 255 255 / 0.3),
     inset 0 -1px 2px rgb(0 0 0 / 0.2),

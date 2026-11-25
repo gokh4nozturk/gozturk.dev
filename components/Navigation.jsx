@@ -1,6 +1,7 @@
 "use client";
 
 import ThankYou from "@components/ThankYou";
+import { createLensMap } from "@lib/glass-lens-map";
 import { cn } from "@lib/utils";
 import { Bookmark, Home, LayoutGrid } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
@@ -26,24 +27,31 @@ const navItems = [
   },
 ];
 
-const LENS_SPRING = { bounce: 0.3, duration: 0.5, type: "spring" };
+const FILTER_ID = "liquid-glass-refraction";
+const REFRACTION = 22; // px, max sample offset at the rim (green channel)
+const DISPERSION = 0.04; // red bends less, blue bends more, by this fraction
+const DEFAULT_LIGHT_ANGLE = -45; // deg, conic angle (0 = top): light from the top-left
+const LENS_SPRING = { bounce: 0.28, duration: 0.55, type: "spring" };
 
 // Bottom navigation as a liquid glass pill (styles: .liquid-glass in globals.css).
 export default function Navigation() {
   const pathname = usePathname();
   const navRef = useRef(null);
   const reduceMotion = useReducedMotion();
-  const refract = useRefraction();
-  useSpecularGlint(navRef);
+  const lens = useLensMap(navRef);
+  const hasNavigated = useHasNavigated(pathname);
+  usePointerLight(navRef);
 
   return (
     <nav
       aria-label="Main"
-      className="liquid-glass fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-full p-1.5 sm:bottom-12"
-      data-refract={refract ? "" : undefined}
+      // Centered with inset + auto margins, not translate: Chromium misplaces
+      // an SVG backdrop-filter on a transformed element.
+      className="liquid-glass fixed inset-x-0 bottom-6 z-50 mx-auto flex w-fit items-center gap-1 rounded-full p-1.5 sm:bottom-12"
+      data-refract={lens ? "" : undefined}
       ref={navRef}
     >
-      {refract && <RefractionFilter />}
+      {lens && <RefractionFilter {...lens} />}
       <ul className="flex items-center">
         {navItems.map(({ name, path, icon: Icon }) => {
           const isActive = pathname === path;
@@ -63,10 +71,22 @@ export default function Navigation() {
               >
                 {isActive && (
                   <motion.span
-                    className="glass-lens absolute inset-0 rounded-full"
+                    className="absolute inset-0"
                     layoutId="nav-lens"
                     transition={reduceMotion ? { duration: 0 } : LENS_SPRING}
-                  />
+                  >
+                    {/* Inner layer squashes and stretches like a droplet while the
+                        outer one slides, so the two transforms don't fight. */}
+                    <motion.span
+                      animate={
+                        hasNavigated && !reduceMotion
+                          ? { scaleX: [1, 1.22, 0.96, 1], scaleY: [1, 0.84, 1.04, 1] }
+                          : undefined
+                      }
+                      className="glass-lens absolute inset-0 rounded-full"
+                      transition={{ duration: 0.55, ease: "easeOut", times: [0, 0.35, 0.7, 1] }}
+                    />
+                  </motion.span>
                 )}
                 <motion.span
                   className="relative"
@@ -86,20 +106,51 @@ export default function Navigation() {
   );
 }
 
-// SVG backdrop refraction only renders in Chromium; elsewhere the url() filter
-// would drop the whole backdrop-filter, so it's opt-in.
-function useRefraction() {
-  const [supported, setSupported] = useState(false);
+// True once the route has changed at least once, so the droplet doesn't
+// wobble on the first page load.
+function useHasNavigated(pathname) {
+  const first = useRef(pathname);
+  const [navigated, setNavigated] = useState(false);
   useEffect(() => {
-    const brands = navigator.userAgentData?.brands ?? [];
-    const reduceTransparency = window.matchMedia("(prefers-reduced-transparency: reduce)").matches;
-    setSupported(!reduceTransparency && brands.some((b) => b.brand === "Chromium"));
-  }, []);
-  return supported;
+    if (pathname !== first.current) setNavigated(true);
+  }, [pathname]);
+  return navigated || pathname !== first.current;
 }
 
-// Moves the glint (::after) toward the pointer while it is over the pill.
-function useSpecularGlint(ref) {
+// Builds a lens displacement map matching the pill's size. Returns null where
+// SVG backdrop filters don't render (non-Chromium) or the user asked for less
+// transparency; the CSS then falls back to frosted glass.
+function useLensMap(ref) {
+  const [lens, setLens] = useState(null);
+
+  useEffect(() => {
+    const nav = ref.current;
+    const brands = navigator.userAgentData?.brands ?? [];
+    const isChromium = brands.some((b) => b.brand === "Chromium");
+    const reduceTransparency = window.matchMedia("(prefers-reduced-transparency: reduce)").matches;
+    if (!nav || !isChromium || reduceTransparency) return;
+
+    let size = "";
+    const update = () => {
+      const width = Math.round(nav.offsetWidth);
+      const height = Math.round(nav.offsetHeight);
+      const next = `${width}x${height}`;
+      if (!width || !height || next === size) return;
+      size = next;
+      setLens({ height, map: createLensMap(width, height), width });
+    };
+
+    const observer = new ResizeObserver(update);
+    observer.observe(nav);
+    update();
+    return () => observer.disconnect();
+  }, [ref]);
+
+  return lens;
+}
+
+// Turns the rim's specular highlight toward the pointer.
+function usePointerLight(ref) {
   useEffect(() => {
     const nav = ref.current;
     if (!nav || window.matchMedia("(hover: none)").matches) return;
@@ -109,54 +160,80 @@ function useSpecularGlint(ref) {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         const rect = nav.getBoundingClientRect();
-        nav.style.setProperty("--glass-x", `${event.clientX - rect.left}px`);
-        nav.style.setProperty("--glass-y", `${event.clientY - rect.top}px`);
-        nav.style.setProperty("--glass-glint-opacity", "1");
+        const dx = event.clientX - (rect.left + rect.width / 2);
+        // Squash the vertical distance so the pill's aspect ratio doesn't
+        // pin the highlight to the long edges.
+        const dy = (event.clientY - (rect.top + rect.height / 2)) * (rect.width / rect.height);
+        // atan2 is 0 at +x and clockwise on screen; the conic gradient is 0 at the top.
+        const angle = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
+        nav.style.setProperty("--glass-angle", `${angle}deg`);
       });
     };
     const onPointerLeave = () => {
       cancelAnimationFrame(frame);
-      nav.style.removeProperty("--glass-x");
-      nav.style.removeProperty("--glass-y");
-      nav.style.removeProperty("--glass-glint-opacity");
+      nav.style.setProperty("--glass-angle", `${DEFAULT_LIGHT_ANGLE}deg`);
     };
 
-    nav.addEventListener("pointermove", onPointerMove);
-    nav.addEventListener("pointerleave", onPointerLeave);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.documentElement.addEventListener("pointerleave", onPointerLeave);
     return () => {
       cancelAnimationFrame(frame);
-      nav.removeEventListener("pointermove", onPointerMove);
-      nav.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("pointermove", onPointerMove);
+      document.documentElement.removeEventListener("pointerleave", onPointerLeave);
     };
   }, [ref]);
 }
 
-function RefractionFilter() {
+// Displaces the backdrop through the lens map once per color channel, each a
+// little stronger than the last, then screens them back together. That gives
+// the rim its bend plus a faint chromatic fringe.
+function RefractionFilter({ width, height, map }) {
+  const channels = [
+    { matrix: "1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0", name: "r", scale: 1 - DISPERSION },
+    { matrix: "0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0", name: "g", scale: 1 },
+    { matrix: "0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0", name: "b", scale: 1 + DISPERSION },
+  ];
+
   return (
     <svg aria-hidden="true" className="pointer-events-none absolute size-0">
       <filter
         colorInterpolationFilters="sRGB"
-        height="140%"
-        id="liquid-glass-refraction"
-        width="140%"
-        x="-20%"
-        y="-20%"
+        filterUnits="userSpaceOnUse"
+        height={height}
+        id={FILTER_ID}
+        width={width}
+        x="0"
+        y="0"
       >
-        <feTurbulence
-          baseFrequency="0.012 0.02"
-          numOctaves="2"
-          result="noise"
-          seed="7"
-          type="fractalNoise"
+        <feImage
+          height={height}
+          href={map}
+          preserveAspectRatio="none"
+          result="lens"
+          width={width}
+          x="0"
+          y="0"
         />
-        <feGaussianBlur in="noise" result="soft" stdDeviation="2" />
-        <feDisplacementMap
-          in="SourceGraphic"
-          in2="soft"
-          scale="28"
-          xChannelSelector="R"
-          yChannelSelector="G"
-        />
+        {channels.map(({ name, scale, matrix }) => [
+          <feDisplacementMap
+            in="SourceGraphic"
+            in2="lens"
+            key={`${name}-displace`}
+            result={`${name}-displaced`}
+            scale={REFRACTION * scale}
+            xChannelSelector="R"
+            yChannelSelector="G"
+          />,
+          <feColorMatrix
+            in={`${name}-displaced`}
+            key={`${name}-isolate`}
+            result={name}
+            type="matrix"
+            values={matrix}
+          />,
+        ])}
+        <feBlend in="r" in2="g" mode="screen" result="rg" />
+        <feBlend in="rg" in2="b" mode="screen" />
       </filter>
     </svg>
   );
