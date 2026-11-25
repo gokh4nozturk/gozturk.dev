@@ -18,7 +18,8 @@ const loadGoogleFont = async (font, text, weights) => {
 };
 
 export async function GET() {
-  const text = "Gökhan Öztürk - JavaScript enthusiast and 👻 Witchcraft 🕸️.";
+  // Every string drawn on the image, so the Google Fonts subset covers all glyphs.
+  const text = `Gökhan Öztürk Software engineer in İstanbul. I build products I'd want to use myself. github.com/gokh4nozturk linkedin.com/in/gokhannozturk ·`;
   try {
     return new ImageResponse(
       <div
@@ -60,11 +61,17 @@ export async function GET() {
             </p>
             <p
               style={{
+                display: "flex",
+                flexDirection: "column",
                 fontSize: "28px",
                 fontWeight: "500",
+                lineHeight: 1.35,
               }}
             >
-              Frontend developer, JavaScript enthusiast and 👻 Witchcraft 🕸️.
+              <span>Software engineer in İstanbul.</span>
+              <span style={{ color: "rgba(156, 163, 175, 1)" }}>
+                I build products I'd want to use myself.
+              </span>
             </p>
           </span>
         </div>

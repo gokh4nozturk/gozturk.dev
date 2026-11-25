@@ -19,7 +19,8 @@ export const metadata = {
     },
   ],
   creator: "Gökhan Öztürk",
-  description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+  description:
+    "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
   icon: [
     {
       rel: "icon",
@@ -48,26 +49,28 @@ export const metadata = {
     "Gökhan Öztürk",
     "gokhanozturk",
     "gokh4nozturk",
-    "developer",
-    "crafter",
+    "software engineer",
+    "iOS developer",
     "web developer",
+    "open source",
     "software engineer",
     "programmer",
     "frontend developer",
   ],
   metadataBase: new URL("https://gozturk.dev"),
   openGraph: {
-    description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+    description:
+      "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
     images: [
       {
-        alt: "Gökhan Öztürk – Developer, crafter",
+        alt: "Gökhan Öztürk – Software engineer in İstanbul",
         height: 630,
         type: "image/png",
         url: "https://gozturk.dev/api/og",
         width: 1200,
       },
     ],
-    title: "Gökhan Öztürk – Developer, crafter",
+    title: "Gökhan Öztürk – Software engineer",
     url: "/",
   },
   publisher: "Gökhan Öztürk",
@@ -84,20 +87,21 @@ export const metadata = {
     nocache: true,
   },
   title: {
-    default: "Gökhan Öztürk – Developer, crafter",
-    template: "%s | Gökhan Öztürk – Developer, crafter",
+    default: "Gökhan Öztürk – Software engineer",
+    template: "%s | Gökhan Öztürk",
   },
   twitter: {
     card: "summary_large_image",
     creator: "@gokh4nozturk",
-    description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+    description:
+      "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
     images: [
       {
         url: "https://gozturk.dev/api/og",
       },
     ],
     site: "@gokh4nozturk",
-    title: "Gökhan Öztürk – Developer, crafter",
+    title: "Gökhan Öztürk – Software engineer",
   },
 };
 
@@ -119,8 +123,9 @@ const jsonLd = {
     {
       "@id": "https://gozturk.dev/#person",
       "@type": "Person",
-      description: "Personal website of Gökhan Öztürk, a developer and crafter.",
-      jobTitle: "Developer",
+      description:
+        "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
+      jobTitle: "Software Engineer",
       name: "Gökhan Öztürk",
       sameAs: ["https://github.com/gokh4nozturk", "https://twitter.com/gokh4nozturk"],
       url: "https://gozturk.dev",
@@ -128,9 +133,10 @@ const jsonLd = {
     {
       "@id": "https://gozturk.dev/#website",
       "@type": "WebSite",
-      description: "Personal website of Gökhan Öztürk, a developer and crafter.",
+      description:
+        "Gökhan Öztürk is a software engineer in İstanbul who builds iOS apps, web products and open source tools.",
       inLanguage: "en",
-      name: "Gökhan Öztürk – Developer, crafter",
+      name: "Gökhan Öztürk – Software engineer",
       publisher: { "@id": "https://gozturk.dev/#person" },
       url: "https://gozturk.dev",
     },
