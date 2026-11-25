@@ -64,8 +64,9 @@ export function Sidebar() {
         </div>
       </div>
 
-      <p className="text-p3-text-light text-sm lg:mt-6">
-        Software engineer in İstanbul. I build iOS apps, web products and open source tools.
+      {/* A byline: facts only. What I do and care about lives in the home intro. */}
+      <p className="text-p3-text-light text-sm lg:mt-5">
+        Software engineer <span aria-hidden="true">·</span> İstanbul
       </p>
 
       <SocialLinks className="lg:hidden" />

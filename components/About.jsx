@@ -10,7 +10,7 @@ export default function About() {
         >
           👋
         </span>
-        my name is Gökhan, a software engineer.
+        I build products I'd want to use myself.
       </p>
       <p className="max-w-[62ch] text-base text-p3-text-light sm:text-lg">
         I am an enthusiast for well-designed products, free & open source software contributor &
