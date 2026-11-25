@@ -1,4 +1,15 @@
+import { useId } from "react";
+
+// Notion-style avatar. Pupils move by --pupil-x / --pupil-y (SVG user units)
+// set on any ancestor; the white sticker outline comes from the filter.
+const pupilStyle = {
+  transform: "translate(var(--pupil-x, 0px), var(--pupil-y, 0px))",
+  transition: "transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+};
+
 export default function Profile({ className }) {
+  // Unique per instance so the outline filter never collides with another SVG.
+  const filterId = `profile-outline-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   return (
     <svg
       className={className}
@@ -11,7 +22,7 @@ export default function Profile({ className }) {
           colorInterpolationFilters="linearRGB"
           filterUnits="objectBoundingBox"
           height="140%"
-          id="filter"
+          id={filterId}
           primitiveUnits="userSpaceOnUse"
           width="140%"
           x="-20%"
@@ -26,7 +37,7 @@ export default function Profile({ className }) {
           </feMerge>
         </filter>
       </defs>
-      <g filter="url(#filter)" id="notion-avatar">
+      <g filter={`url(#${filterId})`} id="notion-avatar">
         <g fill="#ffffff" id="notion-avatar-face">
           <title>Face/ 7</title>
           <g
@@ -102,7 +113,7 @@ export default function Profile({ className }) {
                   strokeLinejoin="round"
                   strokeWidth="12"
                 />
-                <circle cx="32" cy="28" fill="#000000" id="Oval" r="10" />
+                <circle cx="32" cy="28" fill="#000000" r="10" style={pupilStyle} />
               </g>
               <g transform="translate(0.000000, 1.000000)">
                 <circle
@@ -123,7 +134,7 @@ export default function Profile({ className }) {
                   strokeLinejoin="round"
                   strokeWidth="12"
                 />
-                <circle cx="32" cy="28" fill="#000000" id="Oval" r="10" />
+                <circle cx="32" cy="28" fill="#000000" r="10" style={pupilStyle} />
               </g>
             </g>
           </g>
