@@ -4,7 +4,7 @@ import { experience } from "@lib/resume-data";
 export default function Experience() {
   return (
     <Section title="Experience">
-      <ol className="grid gap-4">
+      <ol className="grid grid-cols-1 gap-4">
         {experience.map((job) => (
           <li className="flex items-baseline gap-4" key={job.company}>
             <div className="min-w-0">

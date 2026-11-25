@@ -48,13 +48,16 @@ export default async function Bookmarks({ searchParams }) {
       {months.length === 0 ? (
         <p className="text-p3-text-light text-sm">Nothing saved for this year yet.</p>
       ) : (
-        <div className="grid gap-10">
+        <div className="grid grid-cols-1 gap-10">
           {months.map(({ label, items }) => (
-            <section className="grid gap-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6" key={label}>
+            <section
+              className="grid grid-cols-1 gap-3 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-6"
+              key={label}
+            >
               <h2 className="eyebrow text-p3-text-light sm:sticky sm:top-14 sm:self-start sm:pt-3">
                 {label}
               </h2>
-              <ul className="grid gap-1">
+              <ul className="grid grid-cols-1 gap-1">
                 {items.map((bookmark) => (
                   <BookmarkRow bookmark={bookmark} key={bookmark._id} />
                 ))}
@@ -119,7 +122,9 @@ function BookmarkRow({ bookmark }) {
           target="_blank"
         >
           <span className="min-w-0 flex-1">
-            <span className="line-clamp-2 font-medium text-sm sm:text-base">{title}</span>
+            <span className="line-clamp-2 font-medium text-sm [overflow-wrap:anywhere] sm:text-base">
+              {title}
+            </span>
             <span className="meta mt-1 flex flex-wrap gap-x-2 text-p3-text-light">
               {domain && <span>{domain}</span>}
               {tags?.map((tag) => (
