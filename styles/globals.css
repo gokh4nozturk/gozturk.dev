@@ -588,3 +588,13 @@ html:not(.theme-transition)::view-transition-new(root) {
   line-height: 1rem;
   text-transform: uppercase;
 }
+
+/* Avatar: a shadow that follows the head's own outline. */
+.avatar-shadow {
+  filter: drop-shadow(0 1px 1.5px rgb(15 23 42 / 0.18))
+    drop-shadow(0 8px 12px rgb(15 23 42 / 0.22));
+}
+
+.dark .avatar-shadow {
+  filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.5)) drop-shadow(0 8px 14px rgb(0 0 0 / 0.55));
+}

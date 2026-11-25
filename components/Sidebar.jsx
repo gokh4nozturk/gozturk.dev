@@ -100,40 +100,47 @@ function SocialLinks({ className }) {
   );
 }
 
-// Pop-out mask: everything above the disc's center line (within its width)
-// plus the disc itself, so the head rises out of the glass while the
-// shoulders stay inside. --r is the disc radius.
-const popOutMask = [
-  "linear-gradient(#000, #000) top / 100% calc(100% - var(--r)) no-repeat",
-  "radial-gradient(circle at 50% calc(100% - var(--r)), #000 calc(var(--r) - 0.5px), transparent var(--r)) center / 100% 100% no-repeat",
-].join(", ");
+// Avatar geometry, in half the box size (--r). The illustration is a head
+// only (1080 box: face circle centered at (502, 649) with radius 270; with
+// its white outline the drawing spans x 212–810, y 331–939). It's drawn
+// 3.68r wide so the head fills the box, centered on the drawing's middle.
+const LOOK_REACH = 360; // px from the avatar where the look reaches full strength
+const PUPIL_RANGE = { down: 10, side: 14, up: 4 }; // SVG units inside the eye
+const HEAD_TILT = 5; // deg at full strength
+const HEAD_SHIFT = { x: 2, y: 1.5 }; // px at full strength
 
-const PUPIL_RANGE = { down: 7, side: 11, up: 3 }; // SVG units inside the eye
-const PUPIL_REACH = 320; // px from the avatar where the pupils reach full range
+// The head turns a little toward the pointer and the pupils follow it.
+const headStyle = {
+  left: "calc(var(--r) * -0.74)",
+  top: "calc(var(--r) * -1.16)",
+  width: "calc(var(--r) * 3.68)",
+};
 
-// Glass disc (same .liquid-glass as the nav pill) with the illustration's
-// head popping out above it. The pupils follow the pointer.
+// Applied to the wrapper that also carries the drop shadow: the filter is
+// drawn before the transform, so the shadow turns with the head. The origin
+// is the face's center within the box.
+const lookStyle = {
+  transform: `translate(calc(var(--look-x, 0) * ${HEAD_SHIFT.x}px), calc(var(--look-y, 0) * ${HEAD_SHIFT.y}px)) rotate(calc(var(--look-x, 0) * ${HEAD_TILT}deg))`,
+  transformOrigin: "48% 55%",
+  transition: "transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+};
+
 function Avatar() {
   const ref = React.useRef(null);
-  usePupilsFollowPointer(ref);
+  useLookAtPointer(ref);
 
   return (
     <div className="relative size-16 shrink-0 [--r:2rem] md:size-20 md:[--r:2.5rem]" ref={ref}>
-      <div className="liquid-glass absolute inset-0 rounded-full" />
-      {/* SVG placement in disc radii, from the illustration's own geometry
-          (1080 box; face circle at (502, 649) r=270; hair top y=351): 3.5r
-          wide, face 0.3r above the disc center, hair ~0.27r above the rim. */}
-      <div
-        className="absolute inset-x-0 top-[calc(var(--r)*-1.5)] bottom-0"
-        style={{ mask: popOutMask, WebkitMask: popOutMask }}
-      >
-        <Profile className="absolute top-[calc(var(--r)*0.09)] left-1/2 w-[calc(var(--r)*3.5)] max-w-none -translate-x-[46.5%]" />
+      <div className="avatar-shadow absolute inset-0" style={lookStyle}>
+        <Profile className="absolute max-w-none" style={headStyle} />
       </div>
     </div>
   );
 }
 
-function usePupilsFollowPointer(ref) {
+// Sets --look-x/--look-y (-1..1) for the head and --pupil-x/--pupil-y (SVG
+// units) for the eyes. Off on touch screens and with reduced motion.
+function useLookAtPointer(ref) {
   React.useEffect(() => {
     const el = ref.current;
     const still =
@@ -149,17 +156,23 @@ function usePupilsFollowPointer(ref) {
         const dx = event.clientX - (rect.left + rect.width / 2);
         const dy = event.clientY - (rect.top + rect.height / 2);
         const distance = Math.hypot(dx, dy) || 1;
-        const reach = Math.min(1, distance / PUPIL_REACH);
-        const x = (dx / distance) * reach * PUPIL_RANGE.side;
-        const y = (dy / distance) * reach * (dy < 0 ? PUPIL_RANGE.up : PUPIL_RANGE.down);
-        el.style.setProperty("--pupil-x", `${x.toFixed(2)}px`);
-        el.style.setProperty("--pupil-y", `${y.toFixed(2)}px`);
+        const reach = Math.min(1, distance / LOOK_REACH);
+        const lx = (dx / distance) * reach;
+        const ly = (dy / distance) * reach;
+        el.style.setProperty("--look-x", lx.toFixed(3));
+        el.style.setProperty("--look-y", ly.toFixed(3));
+        el.style.setProperty("--pupil-x", `${(lx * PUPIL_RANGE.side).toFixed(2)}px`);
+        el.style.setProperty(
+          "--pupil-y",
+          `${(ly * (ly < 0 ? PUPIL_RANGE.up : PUPIL_RANGE.down)).toFixed(2)}px`,
+        );
       });
     };
     const onPointerLeave = () => {
       cancelAnimationFrame(frame);
-      el.style.removeProperty("--pupil-x");
-      el.style.removeProperty("--pupil-y");
+      for (const name of ["--look-x", "--look-y", "--pupil-x", "--pupil-y"]) {
+        el.style.removeProperty(name);
+      }
     };
 
     window.addEventListener("pointermove", onPointerMove, { passive: true });

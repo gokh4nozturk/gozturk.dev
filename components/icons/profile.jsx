@@ -7,13 +7,14 @@ const pupilStyle = {
   transition: "transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1)",
 };
 
-export default function Profile({ className }) {
+export default function Profile({ className, style }) {
   // Unique per instance so the outline filter never collides with another SVG.
   const filterId = `profile-outline-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
   return (
     <svg
       className={className}
       fill="none"
+      style={style}
       viewBox="0 0 1080 1080"
       xmlns="http://www.w3.org/2000/svg"
     >
